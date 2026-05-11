@@ -1,0 +1,51 @@
+.order-service-page {
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+.order-service-page h1 {
+    text-align: center;
+    font-size: 2rem;
+    color: #333;
+}
+
+.order-service-page form {
+    max-width: 600px;
+    margin: auto;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.order-service-page label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.order-service-page input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.order-service-page button {
+    width: 100%;
+    padding: 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.order-service-page button:hover {
+    background-color: #218838;
+}
+
+.order-service-page p {
+    font-weight: bold;
+    text-align: center;
+}

@@ -1,0 +1,32 @@
+.user-list-page {
+    padding: 20px;
+}
+
+.user-list-page .error {
+    color: red;
+}
+
+.user-list-page ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.user-list-page li {
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.user-list-page button {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.user-list-page button:hover {
+    background-color: #e60000;
+}

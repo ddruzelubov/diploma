@@ -1,0 +1,94 @@
+.service-list-page {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.service-list-page h1 {
+  margin: 0 0 0.35rem;
+  font-size: 1.75rem;
+}
+
+.service-list-page > .service-lead {
+  margin: 0 0 1.5rem;
+  color: var(--color-text-muted);
+}
+
+.service-list-page ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.service-list-page li {
+  padding: 1.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.15s;
+}
+
+.service-list-page li:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.service-list-page h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.2rem;
+  color: var(--color-primary-dark);
+}
+
+.service-list-page p {
+  margin: 0.35rem 0;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.service-list-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.service-list-page button {
+  padding: 0.5rem 0.95rem;
+  border-radius: 9px;
+  border: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.service-list-page button:hover {
+  background: var(--color-primary-dark);
+}
+
+.service-list-page button:nth-of-type(2) {
+  background: #fff;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.service-list-page button:nth-of-type(2):hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary-dark);
+}
+
+.service-list-page button:nth-of-type(3) {
+  background: var(--color-accent);
+  color: #1c1917;
+}
+
+.service-list-page button:nth-of-type(3):hover {
+  filter: brightness(0.95);
+}
+
+.service-list-page .error {
+  color: #b91c1c;
+  margin-bottom: 1rem;
+}

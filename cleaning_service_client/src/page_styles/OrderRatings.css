@@ -1,0 +1,29 @@
+.order-ratings-page {
+    padding: 20px;
+    background-color: #f9f9f9;
+    font-family: 'Arial', sans-serif;
+}
+
+.order-ratings-page h1 {
+    text-align: center;
+    color: #333;
+}
+
+.order-ratings-page ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.order-ratings-page li {
+    padding: 15px;
+    border: 1px solid #ddd;
+    margin: 10px 0;
+    border-radius: 8px;
+    background-color: #ffffff;
+}
+
+.order-ratings-page .error {
+    color: red;
+    text-align: center;
+    margin-top: 10px;
+}

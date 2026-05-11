@@ -1,0 +1,38 @@
+.service-ratings-page {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.service-ratings-page h1 {
+    text-align: center;
+}
+
+.service-ratings-page label {
+    display: block;
+    margin: 10px 0 5px;
+}
+
+.service-ratings-page input,
+.service-ratings-page textarea {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.service-ratings-page button {
+    width: 100%;
+    padding: 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.service-ratings-page button:hover {
+    background-color: #218838;
+}
