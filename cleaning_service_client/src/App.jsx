@@ -56,6 +56,7 @@ const App = () => {
     const handleLogOut = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('userRole');
+        localStorage.removeItem('userId');
         setAuthToken(null);
         setIsAuthenticated(false);
         setIsAdmin(false);

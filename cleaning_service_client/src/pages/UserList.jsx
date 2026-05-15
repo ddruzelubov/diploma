@@ -15,6 +15,7 @@ const UserList = () => {
     const [newAdmin, setNewAdmin] = useState({ username: '', email: '', password: '' });
     const [isFormVisible, setIsFormVisible] = useState(false);
     const [filter, setFilter] = useState('all');
+    const currentUserId = parseInt(localStorage.getItem('userId'), 10);
 
     const fetchUsers = async () => {
         try {
@@ -34,8 +35,8 @@ const UserList = () => {
             setUsers(prev => prev.filter(u => u.id !== id));
             setSuccess('Пользователь удалён.');
             setTimeout(() => setSuccess(''), 3000);
-        } catch {
-            setError('Не удалось удалить пользователя.');
+        } catch (err) {
+            setError(err.response?.data?.error || 'Не удалось удалить пользователя.');
         }
     };
 
@@ -128,9 +129,11 @@ const UserList = () => {
                                     <span className="ul-card__email">{user.email}</span>
                                     <span className={`ul-role-badge ${rl.cls}`}>{rl.text}</span>
                                 </div>
-                                <button className="ul-delete-btn" onClick={() => handleDeleteUser(user.id)} title="Удалить">
-                                    🗑
-                                </button>
+                                {user.id !== currentUserId && (
+                                    <button className="ul-delete-btn" onClick={() => handleDeleteUser(user.id)} title="Удалить">
+                                        🗑
+                                    </button>
+                                )}
                             </div>
                         );
                     })}

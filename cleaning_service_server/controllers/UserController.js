@@ -105,9 +105,12 @@ class UserController {
 
     async deleteUser(req, res) {
         const { id } = req.params;
+        if (req.user.id === parseInt(id, 10)) {
+            return res.status(403).json({ error: 'Нельзя удалить собственный аккаунт.' });
+        }
         try {
             await UserService.deleteUser(id);
-            await logDbOperation('DELETE', 'users', id);
+            logDbOperation('DELETE', 'users', id);
             res.status(204).send();
         } catch (error) {
             res.status(404).json({ error: error.message });

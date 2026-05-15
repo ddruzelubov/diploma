@@ -23,7 +23,8 @@ const Login = ({ onLogIn }) => {
                 localStorage.setItem('token', data.token); 
                 setAuthToken(data.token);
                 const userRole = data.user.role; 
-                localStorage.setItem('userRole', userRole); 
+                localStorage.setItem('userRole', userRole);
+                localStorage.setItem('userId', data.user.id); 
                 onLogIn(); 
                 navigate('/'); 
             } else {
