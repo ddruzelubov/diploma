@@ -5,11 +5,11 @@ const connectDB = async () => {
         await mongoose.connect('mongodb://localhost:27017/loggingDB', {
             useNewUrlParser: true,
             useUnifiedTopology: true,
+            serverSelectionTimeoutMS: 3000,
         });
         console.log('MongoDB connected');
     } catch (error) {
-        console.error('MongoDB connection error:', error);
-        process.exit(1);
+        console.warn('MongoDB not available, logging disabled:', error.message);
     }
 };
 
