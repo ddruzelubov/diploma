@@ -20,8 +20,8 @@ class OrderRatingRepository {
             include: [
                 { model: User },
                 { 
-                    model: Order, 
-                    include: [{ model: Service }] 
+                    model: Order,
+                    include: [{ model: Service, as: 'service' }] 
                 }
             ]
         });
@@ -31,7 +31,10 @@ class OrderRatingRepository {
         return await OrderRating.findAll({
             where: { user_id: userId },
             include: [
-                { model: Order, include: [{ model: Service }] }, 
+                {
+                    model: Order,
+                    include: [{ model: Service, as: 'service' }]
+                }, 
                 { model: User }
             ]
         });
@@ -42,8 +45,8 @@ class OrderRatingRepository {
             include: [
                 { model: User },
                 { 
-                    model: Order, 
-                    include: [{ model: Service }] 
+                    model: Order,
+                    include: [{ model: Service, as: 'service' }] 
                 }
             ] 
         });
@@ -72,12 +75,9 @@ class OrderRatingRepository {
     
         if (orders.length > 0) {
             const orderIds = orders.map(order => order.id); 
-    
-            const result = await OrderRating.destroy({
+            return await OrderRating.destroy({
                 where: { order_id: orderIds }
             });
-            
-            return result;
         }
 
         return 0;

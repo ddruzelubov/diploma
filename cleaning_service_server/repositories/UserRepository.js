@@ -10,6 +10,10 @@ class UserRepository {
         return await User.findAll();
     }
 
+    async findAllByRole(role) {
+        return await User.findAll({ where: { role } });
+    }
+
     async findById(id) {
         return await User.findByPk(id);
     }
@@ -18,7 +22,6 @@ class UserRepository {
         return await User.findOne({ where: { email } });
     }
 
-    /** Полная запись с паролем — только для аутентификации */
     async findUserByEmailWithPassword(email) {
         return await User.unscoped().findOne({ where: { email } });
     }

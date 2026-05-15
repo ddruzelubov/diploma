@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import AdminPanel from './components/AdminPanel';
+import CleanerPanel from './components/CleanerPanel';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import ServiceList from './pages/ServiceList';
@@ -17,6 +18,8 @@ import AdminServices from './pages/AdminServices';
 import UserList from './pages/UserList';
 import AdminOrders from './pages/AdminOrders';
 import AdminRatings from './pages/AdminRatings';
+import AdminCleaners from './pages/AdminCleaners';
+import CleanerOrders from './pages/CleanerOrders';
 import ProfilePage from './pages/ProfilePage';
 import { setAuthToken } from './api/api';
 import './App.css';
@@ -24,6 +27,7 @@ import './App.css';
 const App = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [isCleaner, setIsCleaner] = useState(false);
 
     const syncAuthFromStorage = useCallback(() => {
         const token = localStorage.getItem('token');
@@ -32,10 +36,12 @@ const App = () => {
             setAuthToken(token);
             setIsAuthenticated(true);
             setIsAdmin(userRole === 'admin');
+            setIsCleaner(userRole === 'cleaner');
         } else {
             setAuthToken(null);
             setIsAuthenticated(false);
             setIsAdmin(false);
+            setIsCleaner(false);
         }
     }, []);
 
@@ -53,16 +59,19 @@ const App = () => {
         setAuthToken(null);
         setIsAuthenticated(false);
         setIsAdmin(false);
+        setIsCleaner(false);
+    };
+
+    const renderNav = () => {
+        if (isAdmin) return <AdminPanel onLogOut={handleLogOut} />;
+        if (isCleaner) return <CleanerPanel onLogOut={handleLogOut} />;
+        return <NavBar isAuthenticated={isAuthenticated} onLogOut={handleLogOut} />;
     };
 
     return (
         <Router>
             <div className="app">
-                {isAdmin ? (
-                    <AdminPanel onLogOut={handleLogOut} />
-                ) : (
-                    <NavBar isAuthenticated={isAuthenticated} onLogOut={handleLogOut} />
-                )}
+                {renderNav()}
                 <main className="content">
                     <Routes>
                         <Route path="/" element={<HomePage />} />
@@ -77,10 +86,12 @@ const App = () => {
                         <Route path="/order-ratings" element={<OrderRatings />} />
                         <Route path="/order-rating/:orderId" element={<OrderRatingPage />} />
                         <Route path="/user-ratings" element={<UserRatingsPage />} />
+                        <Route path="/cleaner/orders" element={<CleanerOrders />} />
                         <Route path="/admin/services" element={<AdminServices />} />
                         <Route path="/admin/users" element={<UserList />} />
                         <Route path="/admin/orders" element={<AdminOrders />} />
                         <Route path="/admin/ratings" element={<AdminRatings />} />
+                        <Route path="/admin/cleaners" element={<AdminCleaners />} />
                     </Routes>
                 </main>
                 <footer className="footer">

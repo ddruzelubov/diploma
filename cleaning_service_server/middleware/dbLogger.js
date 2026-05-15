@@ -1,7 +1,7 @@
 const { DbLog } = require('../models/Logger');
 
-const logDbOperation = async (operation, collection, documentId) => {
-    await DbLog.create({ operation, collection, documentId });
+const logDbOperation = (operation, collection, documentId) => {
+    DbLog.create({ operation, collection, documentId }).catch(() => {});
 };
 
 module.exports = logDbOperation;

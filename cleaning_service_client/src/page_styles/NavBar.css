@@ -1,5 +1,11 @@
 .site-header--admin {
   border-bottom: 2px solid rgba(245, 158, 11, 0.35);
+  background: rgba(255, 253, 245, 0.95) !important;
+}
+
+.site-header--cleaner {
+  border-bottom: 2px solid rgba(59, 130, 246, 0.35);
+  background: rgba(245, 249, 255, 0.95) !important;
 }
 
 .site-header {

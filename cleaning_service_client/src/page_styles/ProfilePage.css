@@ -61,6 +61,29 @@
   background: rgba(245, 158, 11, 0.35);
 }
 
+.role-badge--cleaner {
+  background: rgba(59, 130, 246, 0.35);
+}
+
+.role-badge--user {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.profile-link--featured {
+  background: var(--color-primary-soft);
+  border-color: rgba(13, 148, 136, 0.3);
+  color: var(--color-primary-dark);
+  font-weight: 600;
+}
+
+.profile-link--featured:hover {
+  background: rgba(13, 148, 136, 0.2);
+}
+
+.profile-link__icon {
+  margin-right: 0.4rem;
+}
+
 .profile-grid {
   display: grid;
   grid-template-columns: 1fr;

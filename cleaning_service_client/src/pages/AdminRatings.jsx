@@ -1,97 +1,114 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/api';
-import { useNavigate } from 'react-router-dom';
-import '../page_styles/UserRatingsPage.css'; 
+import '../page_styles/AdminRatings.css';
+
+const StarDisplay = ({ rating }) => (
+    <div className="stars">
+        {[1, 2, 3, 4, 5].map(s => (
+            <span key={s} className={`star ${s <= rating ? 'star--filled' : 'star--empty'}`}>★</span>
+        ))}
+    </div>
+);
 
 const AdminRatings = () => {
     const [orderRatings, setOrderRatings] = useState([]);
     const [serviceRatings, setServiceRatings] = useState([]);
     const [error, setError] = useState('');
-    const navigate = useNavigate();
+    const [tab, setTab] = useState('orders');
 
     useEffect(() => {
-        const fetchRatings = async () => {
-            const token = localStorage.getItem('token');
-            try {
-                const [orderResponse, serviceResponse] = await Promise.all([
-                    api.get('/ratings'),
-                    api.get('/reviews/all', {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    })
-                ]);
-                
-                setOrderRatings(orderResponse.data);
-                setServiceRatings(serviceResponse.data);
-            } catch (error) {
-                console.error('Error fetching ratings:', error);
-                setError('Не удалось получить оценки: ' + error.message);
-            }
-        };
-
-        fetchRatings();
-    }, [navigate]);
-
-    const deleteRating = async (ratingId, isOrderRating) => {
         const token = localStorage.getItem('token');
+        Promise.all([
+            api.get('/ratings'),
+            api.get('/reviews/all', { headers: { Authorization: `Bearer ${token}` } })
+        ]).then(([orderRes, serviceRes]) => {
+            setOrderRatings(orderRes.data);
+            setServiceRatings(serviceRes.data);
+        }).catch(err => {
+            setError('Не удалось загрузить отзывы: ' + err.message);
+        });
+    }, []);
+
+    const deleteRating = async (id, isOrder) => {
         try {
-            if (isOrderRating) {
-                await api.delete(`/ratings/${ratingId}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                setOrderRatings(prevRatings => prevRatings.filter(rating => rating.id !== ratingId));
+            if (isOrder) {
+                await api.delete(`/ratings/${id}`);
+                setOrderRatings(prev => prev.filter(r => r.id !== id));
             } else {
-                await api.delete(`/reviews/${ratingId}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                setServiceRatings(prevRatings => prevRatings.filter(rating => rating.id !== ratingId));
+                await api.delete(`/reviews/${id}`);
+                setServiceRatings(prev => prev.filter(r => r.id !== id));
             }
-        } catch (error) {
-            console.error('Error deleting rating:', error);
-            setError('Не удалось удалить оценку: ' + error.message);
+        } catch (err) {
+            setError('Не удалось удалить: ' + err.message);
         }
     };
 
+    const current = tab === 'orders' ? orderRatings : serviceRatings;
+    const isOrder = tab === 'orders';
+
     return (
-        <div className="user-ratings-page">
-            <h1>Список отзывов</h1>
-            {error && <p className="error">{error}</p>}
+        <div className="ar-page">
+            <div className="ar-header">
+                <h1>Отзывы и оценки</h1>
+                <p className="ar-sub">Управляйте всеми отзывами клиентов.</p>
+            </div>
 
-            <h2>Оценки заказов</h2>
-            {orderRatings.length > 0 ? (
-                <ul>
-                    {orderRatings.map(rating => (
-                        <li key={rating.id}>
-                            Заказ ID: {rating.order_id} - Оценка: {rating.rating} 
-                            {rating.comment && <span> - Комментарий: {rating.comment}</span>}
-                            <span> - Дата: {new Date(rating.rating_date).toLocaleDateString()}</span>
-                            <button onClick={() => deleteRating(rating.id, true)}>Удалить</button>
-                        </li>
-                    ))}
-                </ul>
-            ) : (
-                <p>Нет оценок заказов.</p>
-            )}
+            {error && <p className="ar-error">{error}</p>}
 
-            <h2>Оценки услуг</h2>
-            {serviceRatings.length > 0 ? (
-                <ul>
-                    {serviceRatings.map(rating => (
-                        <li key={rating.id}>
-                            Услуга ID: {rating.service_id} - Оценка: {rating.rating} 
-                            {rating.comment && <span> - Комментарий: {rating.comment}</span>}
-                            <span> - Дата: {new Date(rating.review_date).toLocaleDateString()}</span>
-                            <button onClick={() => deleteRating(rating.id, false)}>Удалить</button>
-                        </li>
-                    ))}
-                </ul>
+            <div className="ar-tabs">
+                <button
+                    className={`ar-tab ${tab === 'orders' ? 'ar-tab--active' : ''}`}
+                    onClick={() => setTab('orders')}
+                >
+                    Оценки заказов
+                    <span className="ar-tab-count">{orderRatings.length}</span>
+                </button>
+                <button
+                    className={`ar-tab ${tab === 'services' ? 'ar-tab--active' : ''}`}
+                    onClick={() => setTab('services')}
+                >
+                    Оценки услуг
+                    <span className="ar-tab-count">{serviceRatings.length}</span>
+                </button>
+            </div>
+
+            {current.length === 0 ? (
+                <div className="ar-empty">
+                    <span className="ar-empty__icon">⭐</span>
+                    <p>Нет {isOrder ? 'оценок заказов' : 'оценок услуг'}.</p>
+                </div>
             ) : (
-                <p>Нет оценок услуг.</p>
+                <div className="ar-list">
+                    {current.map(rating => (
+                        <div key={rating.id} className="ar-card">
+                            <div className="ar-card__left">
+                                <StarDisplay rating={rating.rating} />
+                                {rating.comment && (
+                                    <p className="ar-card__comment">"{rating.comment}"</p>
+                                )}
+                            </div>
+                            <div className="ar-card__meta">
+                                <span className="ar-card__ref">
+                                    {isOrder
+                                        ? `Заказ #${rating.order_id}`
+                                        : `Услуга #${rating.service_id}`}
+                                </span>
+                                <span className="ar-card__date">
+                                    {new Date(isOrder ? rating.rating_date : rating.review_date)
+                                        .toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                </span>
+                                <span className="ar-card__score">{rating.rating}/5</span>
+                            </div>
+                            <button
+                                className="ar-delete-btn"
+                                onClick={() => deleteRating(rating.id, isOrder)}
+                                title="Удалить"
+                            >
+                                🗑
+                            </button>
+                        </div>
+                    ))}
+                </div>
             )}
         </div>
     );

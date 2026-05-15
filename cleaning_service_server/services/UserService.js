@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const UserRepository = require('../repositories/UserRepository');
 const OrderRepository = require('../repositories/OrderRepository');
 const ReviewRepository = require('../repositories/ReviewRepository');
-const OrderRatingRepository =require('../repositories/OrderRatingRepository');
+const OrderRatingRepository = require('../repositories/OrderRatingRepository');
 
 class UserService {
     toPublicUser(user) {
@@ -34,7 +34,7 @@ class UserService {
         if (!user || !(await bcrypt.compare(password, user.password))) {
             throw new Error('Invalid email or password');
         }
-        const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, process.env.JWT_SECRET, { expiresIn: '8h' });
         return { user: this.toPublicUser(user), token };
     }
 
@@ -97,6 +97,10 @@ class UserService {
         return await UserRepository.findAll();
     }
 
+    async getAllCleaners() {
+        return await UserRepository.findAllByRole('cleaner');
+    }
+
     async getUserById(id) {
         const user = await UserRepository.findById(id);
         if (!user) {
@@ -116,23 +120,19 @@ class UserService {
             for (const order of orders) {
                 const ratings = await OrderRatingRepository.findAllByOrderId(order.id) || [];
                 if (ratings.length > 0) {
-                    console.log(`Deleting ratings for order ${order.id}`);
                     await OrderRatingRepository.deleteAllByOrderId(order.id); 
                 }
             }
 
             if (orders.length > 0) {
-                console.log(`Deleting orders for user ${id}`);
                 await OrderRepository.deleteAllByUserId(id); 
             }
 
             const reviews = await ReviewRepository.findAllByUserId(id) || [];
             if (reviews.length > 0) {
-                console.log(`Deleting reviews for user ${id}`);
                 await ReviewRepository.deleteAllByUserId(id); 
             }
    
-            console.log('Attempting to delete user with ID:', id);
             return await UserRepository.delete(id); 
         } catch (error) {
             console.error('Error deleting user:', error);

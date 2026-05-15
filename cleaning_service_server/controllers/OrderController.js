@@ -6,7 +6,7 @@ class OrderController {
         const user_id = req.user.id; 
         try {
             const order = await OrderService.createOrder(user_id, req.body);
-            await logDbOperation('INSERT', 'orders', 'ORDER_' + order._id); 
+            await logDbOperation('INSERT', 'orders', 'ORDER_' + order.id);
             res.status(201).json(order);
         } catch (error) {
             console.error('Error creating order:', error.message || error);
@@ -18,7 +18,6 @@ class OrderController {
         const userId = req.user.id; 
         try {
             const orders = await OrderService.getAllUserOrders(userId);
-            await logDbOperation('SELECT', 'orders', 'USER_' + userId); 
             res.json(orders);
         } catch (error) {
             console.error('Error fetching orders:', error);
@@ -29,7 +28,6 @@ class OrderController {
     async getAllOrders(req, res) {
         try {
             const orders = await OrderService.getAllOrders();
-            await logDbOperation('SELECT', 'orders', 'ALL'); 
             res.json(orders);
         } catch (error) {
             console.error('Error fetching orders:', error);
@@ -37,11 +35,21 @@ class OrderController {
         }
     }
 
+    async getCleanerOrders(req, res) {
+        const cleanerId = req.user.id;
+        try {
+            const orders = await OrderService.getCleanerOrders(cleanerId);
+            res.json(orders);
+        } catch (error) {
+            console.error('Error fetching cleaner orders:', error);
+            res.status(500).json({ error: error.message });
+        }
+    }
+
     async getOrderById(req, res) {
         const { id } = req.params;
         try {
             const order = await OrderService.getOrderById(id);
-            await logDbOperation('SELECT', 'orders', id); 
             res.json(order);
         } catch (error) {
             console.error('Error fetching order:', error);
@@ -49,11 +57,23 @@ class OrderController {
         }
     }
 
+    async assignCleaner(req, res) {
+        const { id } = req.params;
+        const { cleaner_id } = req.body;
+        try {
+            const order = await OrderService.assignCleaner(id, cleaner_id);
+            res.json(order);
+        } catch (error) {
+            console.error('Error assigning cleaner:', error);
+            res.status(400).json({ error: error.message });
+        }
+    }
+
     async updateOrder(req, res) {
         const { id } = req.params;
         try {
             const order = await OrderService.updateOrder(id, req.body);
-            await logDbOperation('UPDATE', 'orders', id); 
+            await logDbOperation('UPDATE', 'orders', id);
             res.json(order);
         } catch (error) {
             console.error('Error updating order:', error);
@@ -65,7 +85,7 @@ class OrderController {
         const { id } = req.params;
         try {
             await OrderService.deleteOrder(id);
-            await logDbOperation('DELETE', 'orders', id); 
+            await logDbOperation('DELETE', 'orders', id);
             res.status(204).send();
         } catch (error) {
             console.error('Error deleting order:', error);

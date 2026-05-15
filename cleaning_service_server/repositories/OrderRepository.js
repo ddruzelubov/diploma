@@ -1,5 +1,6 @@
 const Order = require('../models/Order');
 const Service = require('../models/Service');
+const User = require('../models/User');
 
 class OrderRepository {
     static async create(orderData) {
@@ -9,18 +10,41 @@ class OrderRepository {
     static async findAllByUserId(userId) {
         return await Order.findAll({
             where: { user_id: userId },
-            include: [{ model: Service }]
+            include: [
+                { model: Service, as: 'service' },
+                { model: User, as: 'cleaner', attributes: ['id', 'username', 'email'] }
+            ]
+        });
+    }
+
+    static async findAllByCleanerId(cleanerId) {
+        return await Order.findAll({
+            where: { cleaner_id: cleanerId },
+            include: [
+                { model: Service, as: 'service' },
+                { model: User, as: 'user', attributes: ['id', 'username', 'email'] }
+            ]
         });
     }
 
     static async findAll() {
         return await Order.findAll({
-            include: [{ model: Service }]
+            include: [
+                { model: Service, as: 'service' },
+                { model: User, as: 'user', attributes: ['id', 'username', 'email'] },
+                { model: User, as: 'cleaner', attributes: ['id', 'username', 'email'] }
+            ]
         });
     }
 
     static async findById(orderId) {
-        return await Order.findByPk(orderId, { include: [{ model: Service }] });
+        return await Order.findByPk(orderId, {
+            include: [
+                { model: Service, as: 'service' },
+                { model: User, as: 'user', attributes: ['id', 'username', 'email'] },
+                { model: User, as: 'cleaner', attributes: ['id', 'username', 'email'] }
+            ]
+        });
     }
 
     static async update(order) {

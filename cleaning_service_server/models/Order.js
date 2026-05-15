@@ -23,6 +23,15 @@ Order.init({
     completion_date: {
         type: DataTypes.DATE,
         allowNull: true
+    },
+    cleaner_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
+    status: {
+        type: DataTypes.STRING(50),
+        allowNull: false,
+        defaultValue: 'pending'
     }
 }, {
     sequelize,
@@ -32,8 +41,9 @@ Order.init({
 });
 
 Order.associate = (models) => {
-    Order.belongsTo(models.User, { foreignKey: 'user_id' });
-    Order.belongsTo(models.Service, { foreignKey: 'service_id' });
+    Order.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
+    Order.belongsTo(models.Service, { foreignKey: 'service_id', as: 'service' });
+    Order.belongsTo(models.User, { foreignKey: 'cleaner_id', as: 'cleaner' });
 };
 
 module.exports = Order;
