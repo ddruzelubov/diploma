@@ -2,13 +2,7 @@ import React, { useEffect, useState } from 'react';
 import api, { setAuthToken } from '../api/api';
 import { useNavigate } from 'react-router-dom';
 import '../page_styles/CleanerOrders.css';
-
-const statusLabel = {
-    pending: { text: 'Ожидает', cls: 'badge--pending' },
-    assigned: { text: 'Назначен', cls: 'badge--assigned' },
-    in_progress: { text: 'В работе', cls: 'badge--progress' },
-    completed: { text: 'Выполнен', cls: 'badge--done' },
-};
+import StatusBadge from '../components/StatusBadge';
 
 const CleanerOrders = () => {
     const [orders, setOrders] = useState([]);
@@ -29,9 +23,7 @@ const CleanerOrders = () => {
 
     const updateStatus = async (orderId, status) => {
         try {
-            const body = { status };
-            if (status === 'completed') body.completion_date = new Date();
-            await api.put(`/orders/${orderId}`, body);
+            await api.put(`/orders/${orderId}`, { status });
             setOrders(prev => prev.map(o =>
                 o.id === orderId
                     ? { ...o, status, completion_date: status === 'completed' ? new Date() : o.completion_date }
@@ -62,14 +54,13 @@ const CleanerOrders = () => {
             ) : (
                 <div className="co-list">
                     {orders.map(order => {
-                        const st = statusLabel[order.status] || { text: order.status, cls: 'badge--pending' };
                         const isDone = order.status === 'completed';
                         return (
                             <div key={order.id} className={`co-card ${isDone ? 'co-card--done' : ''}`}>
                                 <div className="co-card__top">
                                     <div className="co-card__info">
                                         <span className="co-card__service">{order.service?.name || 'Услуга'}</span>
-                                        <span className={`co-badge ${st.cls}`}>{st.text}</span>
+                                        <StatusBadge status={order.status} />
                                     </div>
                                     {order.completion_date && (
                                         <span className="co-card__date">

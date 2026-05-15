@@ -2,13 +2,7 @@ import React, { useEffect, useState } from 'react';
 import api, { setAuthToken } from '../api/api';
 import { useNavigate } from 'react-router-dom';
 import '../page_styles/AdminOrders.css';
-
-const statusLabel = {
-    pending: { text: 'Ожидает', cls: 'badge--pending' },
-    assigned: { text: 'Назначен', cls: 'badge--assigned' },
-    in_progress: { text: 'В работе', cls: 'badge--progress' },
-    completed: { text: 'Выполнен', cls: 'badge--done' },
-};
+import StatusBadge from '../components/StatusBadge';
 
 const AdminOrders = () => {
     const [orders, setOrders] = useState([]);
@@ -32,17 +26,6 @@ const AdminOrders = () => {
         }).catch(() => setError('Не удалось загрузить данные'));
     }, [navigate]);
 
-    const completeOrder = async (orderId) => {
-        try {
-            await api.put(`/orders/${orderId}`, { completion_date: new Date(), status: 'completed' });
-            setOrders(prev => prev.map(o =>
-                o.id === orderId ? { ...o, completion_date: new Date(), status: 'completed' } : o
-            ));
-        } catch {
-            setError('Не удалось обновить заказ');
-        }
-    };
-
     const cancelOrder = async (orderId) => {
         try {
             await api.delete(`/orders/${orderId}`);
@@ -62,7 +45,9 @@ const AdminOrders = () => {
         try {
             const res = await api.put(`/orders/${orderId}/assign-cleaner`, { cleaner_id: parseInt(selectedCleaner) });
             setOrders(prev => prev.map(o =>
-                o.id === orderId ? { ...o, ...res.data, cleaner: cleaners.find(c => c.id === parseInt(selectedCleaner)), status: 'assigned' } : o
+                o.id === orderId
+                    ? { ...o, ...res.data, cleaner: cleaners.find(c => c.id === parseInt(selectedCleaner)), status: 'assigned' }
+                    : o
             ));
             setAssigningOrder(null);
         } catch (err) {
@@ -92,14 +77,13 @@ const AdminOrders = () => {
                 ) : (
                     <div className="ao-list">
                         {pending.map(order => {
-                            const st = statusLabel[order.status] || statusLabel.pending;
                             const isAssigning = assigningOrder === order.id;
                             return (
                                 <div key={order.id} className="ao-card">
                                     <div className="ao-card__top">
                                         <div className="ao-card__title-row">
                                             <span className="ao-card__service">{order.service?.name || 'Услуга'}</span>
-                                            <span className={`ao-badge ${st.cls}`}>{st.text}</span>
+                                            <StatusBadge status={order.status} />
                                         </div>
                                         <span className="ao-card__date">
                                             {new Date(order.order_date).toLocaleDateString('ru-RU')}
@@ -152,9 +136,6 @@ const AdminOrders = () => {
                                                 <button className="ao-btn ao-btn--assign" onClick={() => openAssign(order.id)}>
                                                     🧹 {order.cleaner ? 'Сменить клинера' : 'Назначить клинера'}
                                                 </button>
-                                                <button className="ao-btn ao-btn--primary" onClick={() => completeOrder(order.id)}>
-                                                    ✓ Выполнен
-                                                </button>
                                                 <button className="ao-btn ao-btn--danger" onClick={() => cancelOrder(order.id)}>
                                                     Отменить
                                                 </button>
@@ -182,7 +163,7 @@ const AdminOrders = () => {
                                 <div className="ao-card__top">
                                     <div className="ao-card__title-row">
                                         <span className="ao-card__service">{order.service?.name || 'Услуга'}</span>
-                                        <span className="ao-badge badge--done">Выполнен</span>
+                                        <StatusBadge status="completed" />
                                     </div>
                                     <span className="ao-card__date">
                                         {new Date(order.completion_date).toLocaleDateString('ru-RU')}

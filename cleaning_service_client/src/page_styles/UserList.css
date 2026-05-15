@@ -251,12 +251,12 @@
     cursor: pointer;
     padding: 0.25rem;
     border-radius: 6px;
-    opacity: 0.4;
-    transition: opacity 0.15s, background 0.15s;
+    opacity: 1;
+    transition: background 0.15s;
     flex-shrink: 0;
+    color: var(--color-text-muted);
 }
 
 .ul-delete-btn:hover {
-    opacity: 1;
     background: #fee2e2;
 }

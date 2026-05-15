@@ -58,34 +58,38 @@ class OrderService {
         return await OrderRepository.update(order);
     }
 
-    async updateOrder(orderId, orderData) {
+    async updateOrder(orderId, orderData, userRole) {
         const order = await OrderRepository.findById(orderId);
         if (!order) throw new Error('Order not found');
-    
-        const { area, address, completion_date, status } = orderData;
-    
+
+        const { area, address, status } = orderData;
+
         if (area !== undefined) {
             if (area <= 0) throw new Error('Area must be greater than 0');
             order.area = area;
             if (order.service && order.service.base_price) {
-                order.total_price = order.service.base_price * area; 
+                order.total_price = order.service.base_price * area;
             } else {
                 throw new Error('Service not found or has no base price');
             }
         }
-    
+
         if (address) order.address = address;
-    
-        if (completion_date) {
-            if (new Date(completion_date) <= new Date(order.order_date)) {
-                throw new Error('Completion date must be later than order date');
+
+        if (status !== undefined) {
+            const validStatuses = ['pending', 'assigned', 'in_progress', 'completed'];
+            if (!validStatuses.includes(status)) {
+                throw new Error('Invalid status value');
             }
-            order.completion_date = completion_date;
-            order.status = 'completed';
+            if (status === 'completed') {
+                if (userRole !== 'cleaner') {
+                    throw new Error('Только клинер может завершить заказ');
+                }
+                order.completion_date = new Date();
+            }
+            order.status = status;
         }
 
-        if (status) order.status = status;
-    
         return await OrderRepository.update(order);
     }
 
@@ -93,7 +97,7 @@ class OrderService {
         const order = await OrderRepository.findById(id);
         if (!order) throw new Error('Order not found');
 
-        await OrderRatingRepository.deleteAllByOrderId(id); 
+        await OrderRatingRepository.deleteAllByOrderId(id);
         return await OrderRepository.delete(id);
     }
 }

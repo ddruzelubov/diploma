@@ -1,0 +1,32 @@
+.star-rating {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.star-btn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0.1rem;
+    line-height: 1;
+    color: #d1d5db;
+    transition: color 0.12s, transform 0.1s;
+}
+
+.star-btn:hover,
+.star-btn--active {
+    color: #f59e0b;
+}
+
+.star-btn:hover {
+    transform: scale(1.15);
+}
+
+.star-btn:disabled {
+    cursor: default;
+}
+
+.star-btn:disabled:hover {
+    transform: none;
+}

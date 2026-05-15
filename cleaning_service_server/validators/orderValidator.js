@@ -14,7 +14,8 @@ const orderSchema = {
         total_price: Joi.number().greater(0).optional(),
         address: Joi.string().optional(),
         order_date: Joi.date().optional(),
-        completion_date: Joi.date().optional() 
+        completion_date: Joi.date().optional(),
+        status: Joi.string().valid('pending', 'assigned', 'in_progress', 'completed').optional()
     })
 };
 

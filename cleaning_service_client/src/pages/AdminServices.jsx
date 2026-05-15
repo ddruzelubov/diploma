@@ -1,132 +1,189 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/api';
-import '../page_styles/ServiceList.css';
+import '../page_styles/AdminServices.css';
 
 const AdminServices = () => {
     const [services, setServices] = useState([]);
     const [error, setError] = useState('');
-    const [newService, setNewService] = useState({ name: '', description: '', base_price: '' });
+    const [success, setSuccess] = useState('');
+    const [form, setForm] = useState({ name: '', description: '', base_price: '' });
     const [editingService, setEditingService] = useState(null);
+    const [showForm, setShowForm] = useState(false);
 
     useEffect(() => {
-        const fetchServices = async () => {
-            try {
-                const response = await api.get('/services');
-                setServices(response.data);
-            } catch (error) {
-                console.error('Error fetching services:', error);
-                setError('Не удалось загрузить услуги.');
-            }
-        };
-
         fetchServices();
     }, []);
 
-    const handleAddService = async () => {
-        const token = localStorage.getItem('token'); 
+    const fetchServices = async () => {
         try {
-            const response = await api.post('/services', {
-                name: newService.name,
-                description: newService.description,
-                base_price: parseFloat(newService.base_price) 
-            }, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            setServices([...services, response.data]);
-            setNewService({ name: '', description: '', base_price: '' });
-            setError('');
-        } catch (error) {
-            console.error('Error adding service:', error);
-            setError('Не удалось добавить услугу.');
+            const res = await api.get('/services');
+            setServices(res.data);
+        } catch {
+            setError('Не удалось загрузить услуги.');
         }
     };
 
-    const handleEditService = (service) => {
+    const resetForm = () => {
+        setForm({ name: '', description: '', base_price: '' });
+        setEditingService(null);
+        setShowForm(false);
+    };
+
+    const handleEdit = (service) => {
         setEditingService(service);
-        setNewService({ name: service.name, description: service.description, base_price: service.base_price.toString() }); 
+        setForm({
+            name: service.name,
+            description: service.description,
+            base_price: service.base_price.toString()
+        });
+        setShowForm(true);
     };
 
-    const handleUpdateService = async () => {
-        const token = localStorage.getItem('token'); 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        const payload = {
+            name: form.name,
+            description: form.description,
+            base_price: parseFloat(form.base_price)
+        };
         try {
-            const response = await api.put(`/services/${editingService.id}`, {
-                name: newService.name,
-                description: newService.description,
-                base_price: Number(newService.base_price) 
-            }, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            setServices(services.map(service => (service.id === editingService.id ? response.data : service)));
-            setNewService({ name: '', description: '', base_price: '' });
-            setEditingService(null);
-            setError('');
-        } catch (error) {
-            console.error('Error updating service:', error);
-            setError('Не удалось обновить услугу.');
+            if (editingService) {
+                const res = await api.put(`/services/${editingService.id}`, payload);
+                setServices(prev => prev.map(s => s.id === editingService.id ? res.data : s));
+                setSuccess('Услуга обновлена.');
+            } else {
+                const res = await api.post('/services', payload);
+                setServices(prev => [...prev, res.data]);
+                setSuccess('Услуга добавлена.');
+            }
+            resetForm();
+            setTimeout(() => setSuccess(''), 3000);
+        } catch {
+            setError(editingService ? 'Не удалось обновить услугу.' : 'Не удалось добавить услугу.');
         }
     };
 
-    const handleDeleteService = async (id) => {
-        const token = localStorage.getItem('token'); 
+    const handleDelete = async (id) => {
+        if (!window.confirm('Удалить услугу? Это действие нельзя отменить.')) return;
         try {
-            await api.delete(`/services/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            setServices(services.filter(service => service.id !== id));
-        } catch (error) {
-            console.error('Error deleting service:', error);
+            await api.delete(`/services/${id}`);
+            setServices(prev => prev.filter(s => s.id !== id));
+        } catch {
             setError('Не удалось удалить услугу.');
         }
     };
 
     return (
-        <div className="service-list-page">
-            <h1>Услуги</h1>
-            {error && <p className="error">{error}</p>}
-            <div className="service-form">
-                <h2>{editingService ? 'Редактировать услугу' : 'Добавить новую услугу'}</h2>
-                <input
-                    type="text"
-                    placeholder="Название услуги"
-                    value={newService.name}
-                    onChange={(e) => setNewService({ ...newService, name: e.target.value })}
-                    required
-                />
-                <textarea
-                    placeholder="Описание услуги"
-                    value={newService.description}
-                    onChange={(e) => setNewService({ ...newService, description: e.target.value })}
-                    required
-                />
-                <input
-                    type="number"
-                    placeholder="Цена"
-                    value={newService.base_price}
-                    onChange={(e) => setNewService({ ...newService, base_price: e.target.value })}
-                    required
-                />
-                <button onClick={editingService ? handleUpdateService : handleAddService}>
-                    {editingService ? 'Обновить услугу' : 'Добавить услугу'}
+        <div className="as-page">
+            <div className="as-header">
+                <div>
+                    <h1>Услуги</h1>
+                    <p className="as-sub">Управляйте каталогом услуг клинингового сервиса.</p>
+                </div>
+                <button
+                    className="as-add-btn"
+                    onClick={() => {
+                        if (showForm && !editingService) {
+                            resetForm();
+                        } else {
+                            setEditingService(null);
+                            setForm({ name: '', description: '', base_price: '' });
+                            setShowForm(true);
+                        }
+                    }}
+                >
+                    {showForm && !editingService ? '✕ Отмена' : '+ Добавить услугу'}
                 </button>
             </div>
-            <h2>Список услуг</h2>
-            <ul>
-                {services.map(service => (
-                    <li key={service.id}>
-                        <h3>{service.name}</h3>
-                        <p>{service.description}</p>
-                        <p>Цена: {service.base_price} $</p>
-                        <button onClick={() => handleEditService(service)}>Редактировать</button>
-                        <button onClick={() => handleDeleteService(service.id)}>Удалить</button>
-                    </li>
-                ))}
-            </ul>
+
+            {error && <p className="as-error">{error}</p>}
+            {success && <p className="as-success">{success}</p>}
+
+            {showForm && (
+                <div className="as-form-card">
+                    <h2>{editingService ? 'Редактировать услугу' : 'Новая услуга'}</h2>
+                    <form className="as-form" onSubmit={handleSubmit}>
+                        <label className="as-field">
+                            <span>Название</span>
+                            <input
+                                type="text"
+                                placeholder="Уборка квартиры"
+                                value={form.name}
+                                onChange={e => setForm({ ...form, name: e.target.value })}
+                                required
+                            />
+                        </label>
+                        <label className="as-field">
+                            <span>Описание</span>
+                            <textarea
+                                placeholder="Описание услуги"
+                                value={form.description}
+                                onChange={e => setForm({ ...form, description: e.target.value })}
+                                rows={3}
+                                required
+                            />
+                        </label>
+                        <label className="as-field">
+                            <span>Цена за м² (₽)</span>
+                            <input
+                                type="number"
+                                placeholder="15.00"
+                                value={form.base_price}
+                                onChange={e => setForm({ ...form, base_price: e.target.value })}
+                                min="0.01"
+                                step="0.01"
+                                required
+                            />
+                        </label>
+                        <div className="as-form-actions">
+                            <button type="submit" className="as-submit-btn">
+                                {editingService ? 'Сохранить изменения' : 'Добавить услугу'}
+                            </button>
+                            {editingService && (
+                                <button type="button" className="as-cancel-btn" onClick={resetForm}>
+                                    Отмена
+                                </button>
+                            )}
+                        </div>
+                    </form>
+                </div>
+            )}
+
+            <div className="as-list">
+                {services.length === 0 ? (
+                    <div className="as-empty">
+                        <div className="as-empty__icon">🧹</div>
+                        <p>Нет услуг. Добавьте первую.</p>
+                    </div>
+                ) : (
+                    services.map(service => (
+                        <div key={service.id} className="as-card">
+                            <div className="as-card__info">
+                                <strong className="as-card__name">{service.name}</strong>
+                                <p className="as-card__desc">{service.description}</p>
+                                <span className="as-card__price">
+                                    {parseFloat(service.base_price).toFixed(2)} ₽/м²
+                                </span>
+                            </div>
+                            <div className="as-card__actions">
+                                <button
+                                    className="as-btn as-btn--edit"
+                                    onClick={() => handleEdit(service)}
+                                >
+                                    Изменить
+                                </button>
+                                <button
+                                    className="as-btn as-btn--delete"
+                                    onClick={() => handleDelete(service.id)}
+                                >
+                                    Удалить
+                                </button>
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
         </div>
     );
 };

@@ -72,12 +72,12 @@ class OrderController {
     async updateOrder(req, res) {
         const { id } = req.params;
         try {
-            const order = await OrderService.updateOrder(id, req.body);
+            const order = await OrderService.updateOrder(id, req.body, req.user.role);
             await logDbOperation('UPDATE', 'orders', id);
             res.json(order);
         } catch (error) {
             console.error('Error updating order:', error);
-            res.status(500).json({ error: error.message });
+            res.status(400).json({ error: error.message });
         }
     }
 
