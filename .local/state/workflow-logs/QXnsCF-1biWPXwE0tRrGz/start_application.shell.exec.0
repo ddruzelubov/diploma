@@ -1,0 +1,110 @@
+(node:2494) [MONGOOSE] Warning: `collection` is a reserved schema pathname and may break some functionality. You are allowed to use it, but use at your own risk. To disable this warning pass `suppressReservedKeysWarning` as a schema option.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:2494) [MONGODB DRIVER] Warning: useNewUrlParser is a deprecated option: useNewUrlParser has no effect since Node.js Driver version 4.0.0 and will be removed in the next major version
+(node:2494) [MONGODB DRIVER] Warning: useUnifiedTopology is a deprecated option: useUnifiedTopology has no effect since Node.js Driver version 4.0.0 and will be removed in the next major version
+Server is running on port 3001
+
+> cleaning_service_client@0.1.0 start
+> react-scripts start
+
+[1G[0KMongoDB not available, logging disabled: connect ECONNREFUSED 127.0.0.1:27017
+[36mAttempting to bind to HOST environment variable: [33m[1m0.0.0.0[22m[39m[36m[39m
+If this was unintentional, check that you haven't mistakenly set it in your shell.
+Learn more here: [33mhttps://cra.link/advanced-config[39m
+
+Browserslist: browsers data (caniuse-lite) is 18 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+(node:2525) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:2525) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+[2J[3J[H[36mStarting the development server...[39m
+[36m[39m
+[2J[3J[H[32mCompiled successfully![39m
+
+You can now view [1mcleaning_service_client[22m in the browser.
+
+  [1mLocal:[22m            http://localhost:[1m5000[22m
+  [1mOn Your Network:[22m  http://172.31.71.194:[1m5000[22m
+
+Note that the development build is not optimized.
+To create a production build, use [36mnpm run build[39m.
+
+webpack compiled [1m[32msuccessfully[39m[22m
+Error fetching all order ratings: Error
+    at Query.run [90m(/home/runner/workspace/cleaning_service_server/[39mnode_modules/[4msequelize[24m/lib/dialects/postgres/query.js:50:25[90m)[39m
+    at [90m/home/runner/workspace/cleaning_service_server/[39mnode_modules/[4msequelize[24m/lib/sequelize.js:315:28
+[90m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+    at async PostgresQueryInterface.select [90m(/home/runner/workspace/cleaning_service_server/[39mnode_modules/[4msequelize[24m/lib/dialects/abstract/query-interface.js:407:12[90m)[39m
+    at async OrderRating.findAll [90m(/home/runner/workspace/cleaning_service_server/[39mnode_modules/[4msequelize[24m/lib/model.js:1140:21[90m)[39m
+    at async OrderRatingRepository.findAll [90m(/home/runner/workspace/cleaning_service_server/[39mrepositories/OrderRatingRepository.js:19:16[90m)[39m
+    at async OrderRatingService.getAllOrderRatings [90m(/home/runner/workspace/cleaning_service_server/[39mservices/OrderRatingService.js:30:16[90m)[39m
+    at async getAllOrderRatings [90m(/home/runner/workspace/cleaning_service_server/[39mcontrollers/OrderRatingController.js:21:29[90m)[39m {
+  name: [32m'SequelizeDatabaseError'[39m,
+  parent: error: column order.cleaner_id does not exist
+      at Parser.parseErrorMessage [90m(/home/runner/workspace/cleaning_service_server/[39mnode_modules/[4mpg-protocol[24m/dist/parser.js:283:98[90m)[39m
+      at Parser.handlePacket [90m(/home/runner/workspace/cleaning_service_server/[39mnode_modules/[4mpg-protocol[24m/dist/parser.js:122:29[90m)[39m
+      at Parser.parse [90m(/home/runner/workspace/cleaning_service_server/[39mnode_modules/[4mpg-protocol[24m/dist/parser.js:35:38[90m)[39m
+      at Socket.<anonymous> [90m(/home/runner/workspace/cleaning_service_server/[39mnode_modules/[4mpg-protocol[24m/dist/index.js:11:42[90m)[39m
+  [90m    at Socket.emit (node:events:524:28)[39m
+  [90m    at addChunk (node:internal/streams/readable:561:12)[39m
+  [90m    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)[39m
+  [90m    at Readable.push (node:internal/streams/readable:392:5)[39m
+  [90m    at TCP.onStreamRead (node:internal/stream_base_commons:191:23)[39m {
+    length: [33m115[39m,
+    severity: [32m'ERROR'[39m,
+    code: [32m'42703'[39m,
+    detail: [90mundefined[39m,
+    hint: [90mundefined[39m,
+    position: [32m'525'[39m,
+    internalPosition: [90mundefined[39m,
+    internalQuery: [90mundefined[39m,
+    where: [90mundefined[39m,
+    schema: [90mundefined[39m,
+    table: [90mundefined[39m,
+    column: [90mundefined[39m,
+    dataType: [90mundefined[39m,
+    constraint: [90mundefined[39m,
+    file: [32m'parse_relation.c'[39m,
+    line: [32m'3727'[39m,
+    routine: [32m'errorMissingColumn'[39m,
+    sql: [32m'SELECT "OrderRating"."id", "OrderRating"."rating", "OrderRating"."comment", "OrderRating"."rating_date", "OrderRating"."order_id", "OrderRating"."user_id", "user"."id" AS "user.id", "user"."username" AS "user.username", "user"."email" AS "user.email", "user"."role" AS "user.role", "order"."id" AS "order.id", "order"."area" AS "order.area", "order"."total_price" AS "order.total_price", "order"."address" AS "order.address", "order"."order_date" AS "order.order_date", "order"."completion_date" AS "order.completion_date", "order"."cleaner_id" AS "order.cleaner_id", "order"."status" AS "order.status", "order"."user_id" AS "order.user_id", "order"."service_id" AS "order.service_id", "order->service"."id" AS "order.service.id", "order->service"."name" AS "order.service.name", "order->service"."description" AS "order.service.description", "order->service"."base_price" AS "order.service.base_price" FROM "orderratings" AS "OrderRating" LEFT OUTER JOIN "users" AS "user" ON "OrderRating"."user_id" = "user"."id" LEFT OUTER JOIN "orders" AS "order" ON "OrderRating"."order_id" = "order"."id" LEFT OUTER JOIN "services" AS "order->service" ON "order"."service_id" = "order->service"."id";'[39m,
+    parameters: [90mundefined[39m
+  },
+  original: error: column order.cleaner_id does not exist
+      at Parser.parseErrorMessage [90m(/home/runner/workspace/cleaning_service_server/[39mnode_modules/[4mpg-protocol[24m/dist/parser.js:283:98[90m)[39m
+      at Parser.handlePacket [90m(/home/runner/workspace/cleaning_service_server/[39mnode_modules/[4mpg-protocol[24m/dist/parser.js:122:29[90m)[39m
+      at Parser.parse [90m(/home/runner/workspace/cleaning_service_server/[39mnode_modules/[4mpg-protocol[24m/dist/parser.js:35:38[90m)[39m
+      at Socket.<anonymous> [90m(/home/runner/workspace/cleaning_service_server/[39mnode_modules/[4mpg-protocol[24m/dist/index.js:11:42[90m)[39m
+  [90m    at Socket.emit (node:events:524:28)[39m
+  [90m    at addChunk (node:internal/streams/readable:561:12)[39m
+  [90m    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)[39m
+  [90m    at Readable.push (node:internal/streams/readable:392:5)[39m
+  [90m    at TCP.onStreamRead (node:internal/stream_base_commons:191:23)[39m {
+    length: [33m115[39m,
+    severity: [32m'ERROR'[39m,
+    code: [32m'42703'[39m,
+    detail: [90mundefined[39m,
+    hint: [90mundefined[39m,
+    position: [32m'525'[39m,
+    internalPosition: [90mundefined[39m,
+    internalQuery: [90mundefined[39m,
+    where: [90mundefined[39m,
+    schema: [90mundefined[39m,
+    table: [90mundefined[39m,
+    column: [90mundefined[39m,
+    dataType: [90mundefined[39m,
+    constraint: [90mundefined[39m,
+    file: [32m'parse_relation.c'[39m,
+    line: [32m'3727'[39m,
+    routine: [32m'errorMissingColumn'[39m,
+    sql: [32m'SELECT "OrderRating"."id", "OrderRating"."rating", "OrderRating"."comment", "OrderRating"."rating_date", "OrderRating"."order_id", "OrderRating"."user_id", "user"."id" AS "user.id", "user"."username" AS "user.username", "user"."email" AS "user.email", "user"."role" AS "user.role", "order"."id" AS "order.id", "order"."area" AS "order.area", "order"."total_price" AS "order.total_price", "order"."address" AS "order.address", "order"."order_date" AS "order.order_date", "order"."completion_date" AS "order.completion_date", "order"."cleaner_id" AS "order.cleaner_id", "order"."status" AS "order.status", "order"."user_id" AS "order.user_id", "order"."service_id" AS "order.service_id", "order->service"."id" AS "order.service.id", "order->service"."name" AS "order.service.name", "order->service"."description" AS "order.service.description", "order->service"."base_price" AS "order.service.base_price" FROM "orderratings" AS "OrderRating" LEFT OUTER JOIN "users" AS "user" ON "OrderRating"."user_id" = "user"."id" LEFT OUTER JOIN "orders" AS "order" ON "OrderRating"."order_id" = "order"."id" LEFT OUTER JOIN "services" AS "order->service" ON "order"."service_id" = "order->service"."id";'[39m,
+    parameters: [90mundefined[39m
+  },
+  sql: [32m'SELECT "OrderRating"."id", "OrderRating"."rating", "OrderRating"."comment", "OrderRating"."rating_date", "OrderRating"."order_id", "OrderRating"."user_id", "user"."id" AS "user.id", "user"."username" AS "user.username", "user"."email" AS "user.email", "user"."role" AS "user.role", "order"."id" AS "order.id", "order"."area" AS "order.area", "order"."total_price" AS "order.total_price", "order"."address" AS "order.address", "order"."order_date" AS "order.order_date", "order"."completion_date" AS "order.completion_date", "order"."cleaner_id" AS "order.cleaner_id", "order"."status" AS "order.status", "order"."user_id" AS "order.user_id", "order"."service_id" AS "order.service_id", "order->service"."id" AS "order.service.id", "order->service"."name" AS "order.service.name", "order->service"."description" AS "order.service.description", "order->service"."base_price" AS "order.service.base_price" FROM "orderratings" AS "OrderRating" LEFT OUTER JOIN "users" AS "user" ON "OrderRating"."user_id" = "user"."id" LEFT OUTER JOIN "orders" AS "order" ON "OrderRating"."order_id" = "order"."id" LEFT OUTER JOIN "services" AS "order->service" ON "order"."service_id" = "order->service"."id";'[39m,
+  parameters: {}
+}
+Error logging HTTP request: MongooseError: Operation `httplogs.insertOne()` buffering timed out after 10000ms
+    at Timeout.<anonymous> [90m(/home/runner/workspace/cleaning_service_server/[39mnode_modules/[4mmongoose[24m/lib/drivers/node-mongodb-native/collection.js:185:23[90m)[39m
+[90m    at listOnTimeout (node:internal/timers:581:17)[39m
+[90m    at process.processTimers (node:internal/timers:519:7)[39m
