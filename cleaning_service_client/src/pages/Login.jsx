@@ -1,35 +1,27 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom'; 
-import api, { setAuthToken } from '../api/api'; 
-import '../page_styles/Login.css'; 
+import { useNavigate, Link } from 'react-router-dom';
+import api, { setAuthToken } from '../api/api';
+import '../page_styles/Login.css';
 
 const Login = ({ onLogIn }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setErrorMessage(''); 
+        setErrorMessage('');
         try {
-            const response = await api.post('/login', {
-                email,
-                password,
-            });
-
-            if (response.status === 200) { 
-                const data = response.data; 
-                localStorage.setItem('token', data.token); 
+            const response = await api.post('/login', { email, password });
+            if (response.status === 200) {
+                const data = response.data;
+                localStorage.setItem('token', data.token);
                 setAuthToken(data.token);
-                const userRole = data.user.role; 
-                localStorage.setItem('userRole', userRole);
-                localStorage.setItem('userId', data.user.id); 
-                onLogIn(); 
-                navigate('/'); 
-            } else {
-                const errorData = await response.data; 
-                setErrorMessage(errorData.message || 'Ошибка входа. Пожалуйста, проверьте свои учетные данные.');
+                localStorage.setItem('userRole', data.user.role);
+                localStorage.setItem('userId', data.user.id);
+                onLogIn();
+                navigate('/');
             }
         } catch (error) {
             console.error('Ошибка при входе:', error);
@@ -41,36 +33,45 @@ const Login = ({ onLogIn }) => {
     };
 
     return (
-        <div className="login-page">
-            <h1>Вход</h1>
-            <form onSubmit={handleSubmit}>
-                <label>
-                    Электронная почта:
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-                </label>
-                <br />
-                <label>
-                    Пароль:
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                </label>
-                <br />
-                <button type="submit">Войти</button>
-                {errorMessage && <p className="error-message">{errorMessage}</p>}
-            </form>
-            <p>
-                У вас нет аккаунта?{' '}
-                <Link to="/register">Зарегистрироваться</Link>
-            </p>
+        <div className="auth-page">
+            <div className="auth-card">
+                <div className="auth-brand">
+                    <span className="auth-brand__mark">✦</span>
+                    CleanSpace
+                </div>
+                <h1 className="auth-title">Добро пожаловать</h1>
+                <p className="auth-sub">Войдите в личный кабинет</p>
+                {errorMessage && <p className="auth-error">{errorMessage}</p>}
+                <form className="auth-form" onSubmit={handleSubmit}>
+                    <label className="auth-field">
+                        <span>Электронная почта</span>
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            placeholder="your@email.com"
+                            autoComplete="email"
+                        />
+                    </label>
+                    <label className="auth-field">
+                        <span>Пароль</span>
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            placeholder="••••••••"
+                            autoComplete="current-password"
+                        />
+                    </label>
+                    <button type="submit" className="auth-submit">Войти</button>
+                </form>
+                <p className="auth-footer">
+                    Нет аккаунта?{' '}
+                    <Link to="/register">Зарегистрироваться</Link>
+                </p>
+            </div>
         </div>
     );
 };

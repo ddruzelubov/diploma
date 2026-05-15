@@ -4,12 +4,14 @@ const ServiceController = require('../controllers/ServiceController');
 const OrderController = require('../controllers/OrderController');
 const ReviewController = require('../controllers/ReviewController');
 const OrderRatingController = require('../controllers/OrderRatingController');
+const PaymentController = require('../controllers/PaymentController');
 const validateUser = require('../validators/userValidator');
 const validateProfileUpdate = require('../validators/profileValidator');
 const validateService = require('../validators/serviceValidator');
 const validateOrder = require('../validators/orderValidator');
 const validateReview = require('../validators/reviewValidator');
 const validateOrderRating = require('../validators/orderRatingValidator');
+const validatePayment = require('../validators/paymentValidator');
 const auth = require('../middleware/auth');
 
 const router = express.Router();
@@ -59,5 +61,11 @@ router.get('/ratings', OrderRatingController.getAllOrderRatings);
 router.get('/ratings/:id', OrderRatingController.getOrderRatingById);
 router.put('/ratings/:id', auth(), validateOrderRating('update'), OrderRatingController.updateOrderRating);
 router.delete('/ratings/:id', auth(), OrderRatingController.deleteOrderRating);
+
+// Payment routes
+router.post('/payments', auth(), validatePayment('create'), PaymentController.createPayment);
+router.get('/payments', auth(), PaymentController.getUserPayments);
+router.get('/admin/payments', auth(['admin']), PaymentController.getAllPayments);
+router.get('/orders/:orderId/payment', auth(), PaymentController.getPaymentByOrder);
 
 module.exports = router;

@@ -21,6 +21,8 @@ import AdminRatings from './pages/AdminRatings';
 import AdminCleaners from './pages/AdminCleaners';
 import CleanerOrders from './pages/CleanerOrders';
 import ProfilePage from './pages/ProfilePage';
+import PaymentPage from './pages/PaymentPage';
+import PaymentHistoryPage from './pages/PaymentHistoryPage';
 import { setAuthToken } from './api/api';
 import './App.css';
 
@@ -93,6 +95,8 @@ const App = () => {
                         <Route path="/admin/orders" element={<AdminOrders />} />
                         <Route path="/admin/ratings" element={<AdminRatings />} />
                         <Route path="/admin/cleaners" element={<AdminCleaners />} />
+                        <Route path="/payment/:orderId" element={<PaymentPage />} />
+                        <Route path="/payments" element={<PaymentHistoryPage />} />
                     </Routes>
                 </main>
                 <footer className="footer">

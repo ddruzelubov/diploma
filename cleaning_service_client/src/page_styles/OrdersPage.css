@@ -177,3 +177,48 @@
     font-weight: 600;
     color: var(--color-primary);
 }
+
+.orders-notify--pay {
+    background: #eff6ff;
+    border-color: #93c5fd;
+}
+
+.orders-notify--pay .orders-notify__body strong {
+    color: #1d4ed8;
+}
+
+.orders-notify--pay .orders-notify__body p {
+    color: #2563eb;
+}
+
+.orders-notify--rate {
+    background: #fffbeb;
+    border-color: #fcd34d;
+}
+
+.orders-card__paid-badge {
+    display: inline-flex;
+    padding: 0.18rem 0.55rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: #dcfce7;
+    color: #166534;
+}
+
+.orders-card__action-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.btn-order--pay {
+    background: var(--color-primary);
+    color: #fff;
+    border-color: var(--color-primary);
+}
+
+.btn-order--pay:hover {
+    background: var(--color-primary-dark);
+    border-color: var(--color-primary-dark);
+}

@@ -21,6 +21,7 @@ const NavBar = ({ isAuthenticated, onLogOut }) => {
                         <>
                             <NavLink to="/cabinet" className={linkClass}>Кабинет</NavLink>
                             <NavLink to="/orders" className={linkClass}>Мои заказы</NavLink>
+                            <NavLink to="/payments" className={linkClass}>Платежи</NavLink>
                             <NavLink to="/user-ratings" className={linkClass}>Мои оценки</NavLink>
                         </>
                     )}

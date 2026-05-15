@@ -1,39 +1,29 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom'; 
-import api from '../api/api'; 
-import '../page_styles/Register.css'; 
+import { useNavigate, Link } from 'react-router-dom';
+import api from '../api/api';
+import '../page_styles/Register.css';
 
 const Register = () => {
     const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrorMessage('');
-
         if (password.length < 6) {
             setErrorMessage('Пароль должен содержать не менее 6 символов.');
             return;
         }
-        
         try {
-            const response = await api.post('/register', {
-                username,
-                password,
-                email,
-            });
-
-            if (response.status === 201) { 
+            const response = await api.post('/register', { username, password, email });
+            if (response.status === 201) {
                 setUsername('');
                 setPassword('');
                 setEmail('');
-                navigate('/login'); 
-            } else {
-                const errorData = await response.data; 
-                setErrorMessage(errorData.message || 'Ошибка регистрации. Пожалуйста, попробуйте еще раз.');
+                navigate('/login');
             }
         } catch (error) {
             console.error('Ошибка при регистрации:', error);
@@ -45,46 +35,56 @@ const Register = () => {
     };
 
     return (
-        <div className="register-page">
-            <h1>Регистрация</h1>
-            <form onSubmit={handleSubmit}>
-                <label>
-                    Имя пользователя:
-                    <input
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        required
-                    />
-                </label>
-                <br />
-                <label>
-                    Пароль:
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                </label>
-                <br />
-                <label>
-                    Email:
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-                </label>
-                <br />
-                <button type="submit">Зарегистрироваться</button>
-                {errorMessage && <p className="error-message">{errorMessage}</p>} 
-            </form>
-            <p>
-                У вас уже есть аккаунт?{' '}
-                <Link to="/login">Войти</Link>
-            </p>
+        <div className="auth-page">
+            <div className="auth-card">
+                <div className="auth-brand">
+                    <span className="auth-brand__mark">✦</span>
+                    CleanSpace
+                </div>
+                <h1 className="auth-title">Создать аккаунт</h1>
+                <p className="auth-sub">Зарегистрируйтесь и начните пользоваться сервисом</p>
+                {errorMessage && <p className="auth-error">{errorMessage}</p>}
+                <form className="auth-form" onSubmit={handleSubmit}>
+                    <label className="auth-field">
+                        <span>Имя пользователя</span>
+                        <input
+                            type="text"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            required
+                            placeholder="Иван Петров"
+                            autoComplete="name"
+                        />
+                    </label>
+                    <label className="auth-field">
+                        <span>Электронная почта</span>
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            placeholder="your@email.com"
+                            autoComplete="email"
+                        />
+                    </label>
+                    <label className="auth-field">
+                        <span>Пароль</span>
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            placeholder="Не менее 6 символов"
+                            autoComplete="new-password"
+                        />
+                    </label>
+                    <button type="submit" className="auth-submit">Зарегистрироваться</button>
+                </form>
+                <p className="auth-footer">
+                    Уже есть аккаунт?{' '}
+                    <Link to="/login">Войти</Link>
+                </p>
+            </div>
         </div>
     );
 };
