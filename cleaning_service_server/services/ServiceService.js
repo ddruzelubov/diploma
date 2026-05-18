@@ -2,6 +2,7 @@ const ServiceRepository = require('../repositories/ServiceRepository');
 const ReviewRepository = require('../repositories/ReviewRepository');
 const OrderRepository = require('../repositories/OrderRepository');
 const OrderRatingRepository = require('../repositories/OrderRatingRepository');
+const PaymentRepository = require('../repositories/PaymentRepository');
 
 class ServiceService {
     async createService(serviceData) {
@@ -18,6 +19,13 @@ class ServiceService {
 
     async deleteService(id) {
         try {
+            const orders = await OrderRepository.findAllByServiceId ? await OrderRepository.findAllByServiceId(id) : [];
+
+            if (orders && orders.length > 0) {
+                const orderIds = orders.map(o => o.id);
+                await PaymentRepository.deleteAllByOrderIds(orderIds);
+            }
+
             await OrderRatingRepository.deleteAllByServiceId(id);
             await OrderRepository.deleteAllByServiceId(id);
             await ReviewRepository.deleteAllByServiceId(id);
@@ -29,7 +37,7 @@ class ServiceService {
 
     async getAllServicesWithAverageRatings() {
         const services = await ServiceRepository.findAll();
-        
+
         const servicesWithRatings = await Promise.all(services.map(async (service) => {
             const ratings = await ReviewRepository.findAllByServiceId(service.id);
             const totalRating = ratings.reduce((sum, review) => sum + review.rating, 0);

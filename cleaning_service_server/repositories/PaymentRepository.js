@@ -42,6 +42,19 @@ class PaymentRepository {
             include: [{ model: Order, as: 'order' }]
         });
     }
+
+    async deleteByOrderId(orderId) {
+        return await Payment.destroy({ where: { order_id: orderId } });
+    }
+
+    async deleteAllByUserId(userId) {
+        return await Payment.destroy({ where: { user_id: userId } });
+    }
+
+    async deleteAllByOrderIds(orderIds) {
+        if (!orderIds || orderIds.length === 0) return 0;
+        return await Payment.destroy({ where: { order_id: orderIds } });
+    }
 }
 
 module.exports = new PaymentRepository();

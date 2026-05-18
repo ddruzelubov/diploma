@@ -4,6 +4,7 @@ const UserRepository = require('../repositories/UserRepository');
 const OrderRepository = require('../repositories/OrderRepository');
 const ReviewRepository = require('../repositories/ReviewRepository');
 const OrderRatingRepository = require('../repositories/OrderRatingRepository');
+const PaymentRepository = require('../repositories/PaymentRepository');
 
 class UserService {
     toPublicUser(user) {
@@ -116,24 +117,22 @@ class UserService {
     async deleteUser(id) {
         try {
             const orders = await OrderRepository.findAllByUserId(id) || [];
-            
-            for (const order of orders) {
-                const ratings = await OrderRatingRepository.findAllByOrderId(order.id) || [];
-                if (ratings.length > 0) {
-                    await OrderRatingRepository.deleteAllByOrderId(order.id); 
-                }
-            }
 
             if (orders.length > 0) {
-                await OrderRepository.deleteAllByUserId(id); 
+                const orderIds = orders.map(o => o.id);
+                await PaymentRepository.deleteAllByOrderIds(orderIds);
+                await Promise.all(orderIds.map(orderId => OrderRatingRepository.deleteAllByOrderId(orderId)));
+                await OrderRepository.deleteAllByUserId(id);
             }
+
+            await PaymentRepository.deleteAllByUserId(id);
 
             const reviews = await ReviewRepository.findAllByUserId(id) || [];
             if (reviews.length > 0) {
-                await ReviewRepository.deleteAllByUserId(id); 
+                await ReviewRepository.deleteAllByUserId(id);
             }
-   
-            return await UserRepository.delete(id); 
+
+            return await UserRepository.delete(id);
         } catch (error) {
             console.error('Error deleting user:', error);
             throw new Error('Ошибка при удалении пользователя: ' + error.message);

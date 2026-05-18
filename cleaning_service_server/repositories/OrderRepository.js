@@ -59,6 +59,10 @@ class OrderRepository {
         return await Order.destroy({ where: { user_id: userId }});
     }
 
+    static async findAllByServiceId(serviceId) {
+        return await Order.findAll({ where: { service_id: serviceId } });
+    }
+
     static async deleteAllByServiceId(serviceId) {
         return await Order.destroy({ where: { service_id: serviceId }});
     }

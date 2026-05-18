@@ -98,11 +98,11 @@ class OrderService {
         const order = await OrderRepository.findById(id);
         if (!order) throw new Error('Order not found');
 
-        const payment = await PaymentRepository.findByOrderId(id);
-        if (payment) {
-            throw new Error('Невозможно отменить оплаченный заказ');
+        if (order.status === 'completed') {
+            throw new Error('Невозможно отменить выполненный заказ');
         }
 
+        await PaymentRepository.deleteByOrderId(id);
         await OrderRatingRepository.deleteAllByOrderId(id);
         return await OrderRepository.delete(id);
     }

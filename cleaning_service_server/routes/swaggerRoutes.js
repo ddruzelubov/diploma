@@ -1,61 +1,88 @@
+// ─────────────────────────────────────────────
+//  USERS
+// ─────────────────────────────────────────────
+
 /**
  * @swagger
  * tags:
- *   name: Users
- *   description: User management
+ *   - name: Auth
+ *     description: Регистрация и вход
+ *   - name: Users
+ *     description: Управление пользователями
+ *   - name: Cleaners
+ *     description: Управление клинерами
+ *   - name: Services
+ *     description: Услуги клининга
+ *   - name: Orders
+ *     description: Заказы
+ *   - name: Payments
+ *     description: Платежи и возвраты
+ *   - name: Reviews
+ *     description: Отзывы на услуги
+ *   - name: Order Ratings
+ *     description: Оценки выполненных заказов
  */
+
+// ── Auth ──────────────────────────────────────
 
 /**
  * @swagger
  * /api/register:
  *   post:
- *     tags: [Users]
- *     summary: Register a new user
+ *     tags: [Auth]
+ *     summary: Регистрация нового пользователя
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             required: [username, email, password]
  *             properties:
  *               username:
  *                 type: string
- *                 description: User's name
+ *                 example: Иван Иванов
  *               email:
  *                 type: string
  *                 format: email
+ *                 example: ivan@example.com
  *               password:
  *                 type: string
  *                 format: password
+ *                 minLength: 6
+ *                 example: secret123
  *     responses:
  *       201:
- *         description: User registered successfully
+ *         description: Пользователь успешно зарегистрирован
  *       400:
- *         description: Email already registered
+ *         description: Email уже зарегистрирован или ошибка валидации
  */
 
 /**
  * @swagger
  * /api/login:
  *   post:
- *     tags: [Users]
- *     summary: Login a user
+ *     tags: [Auth]
+ *     summary: Вход в систему — получение JWT-токена
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             required: [email, password]
  *             properties:
  *               email:
  *                 type: string
  *                 format: email
+ *                 example: ivan@example.com
  *               password:
  *                 type: string
  *                 format: password
+ *                 example: secret123
  *     responses:
  *       200:
- *         description: User logged in successfully
+ *         description: Успешный вход
  *         content:
  *           application/json:
  *             schema:
@@ -72,23 +99,27 @@
  *                       type: string
  *                     role:
  *                       type: string
+ *                       enum: [user, cleaner, admin]
  *                 token:
  *                   type: string
- *       401:
- *         description: Invalid email or password
+ *                   description: JWT Bearer токен
+ *       400:
+ *         description: Неверный email или пароль
  */
+
+// ── Users (profile) ───────────────────────────
 
 /**
  * @swagger
  * /api/users/me:
  *   get:
  *     tags: [Users]
- *     summary: Текущий пользователь (личный кабинет)
+ *     summary: Получить профиль текущего пользователя
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Профиль без пароля
+ *         description: Профиль пользователя (без пароля)
  *         content:
  *           application/json:
  *             schema:
@@ -104,11 +135,6 @@
  *                   type: string
  *       401:
  *         description: Не авторизован
- */
-
-/**
- * @swagger
- * /api/users/me:
  *   put:
  *     tags: [Users]
  *     summary: Обновить профиль (имя, email, пароль)
@@ -123,6 +149,7 @@
  *             properties:
  *               username:
  *                 type: string
+ *                 example: Новое Имя
  *               email:
  *                 type: string
  *                 format: email
@@ -136,7 +163,7 @@
  *       200:
  *         description: Обновлённый профиль
  *       400:
- *         description: Ошибка валидации или бизнес-логики
+ *         description: Ошибка валидации или неверный текущий пароль
  *       401:
  *         description: Не авторизован
  */
@@ -146,14 +173,31 @@
  * /api/users:
  *   get:
  *     tags: [Users]
- *     summary: Get all users
+ *     summary: Список всех пользователей (только admin)
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: List of users
+ *         description: Массив пользователей
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                   username:
+ *                     type: string
+ *                   email:
+ *                     type: string
+ *                   role:
+ *                     type: string
+ *       401:
+ *         description: Не авторизован
  *       403:
- *         description: Access denied
+ *         description: Доступ запрещён
  */
 
 /**
@@ -161,36 +205,59 @@
  * /api/user/{id}:
  *   delete:
  *     tags: [Users]
- *     summary: Delete a user by ID
+ *     summary: Удалить пользователя по ID (только admin). Каскадно удаляет заказы, платежи и отзывы.
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID of the user to delete
  *         schema:
  *           type: integer
+ *         description: ID пользователя
  *     responses:
  *       204:
- *         description: User deleted successfully
+ *         description: Пользователь удалён
  *       403:
- *         description: Access denied
+ *         description: Нельзя удалить собственный аккаунт или доступ запрещён
+ *       404:
+ *         description: Пользователь не найден
  */
+
+// ── Cleaners ──────────────────────────────────
 
 /**
  * @swagger
- * tags:
- *   name: Services
- *   description: Service management
- */
-
-/**
- * @swagger
- * /api/services:
+ * /api/cleaners:
+ *   get:
+ *     tags: [Cleaners]
+ *     summary: Список всех клинеров (только admin)
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Массив клинеров
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                   username:
+ *                     type: string
+ *                   email:
+ *                     type: string
+ *                   role:
+ *                     type: string
+ *                     example: cleaner
+ *       403:
+ *         description: Доступ запрещён
  *   post:
- *     tags: [Services]
- *     summary: Create a new service
+ *     tags: [Cleaners]
+ *     summary: Создать аккаунт клинера (только admin)
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -199,29 +266,83 @@
  *         application/json:
  *           schema:
  *             type: object
+ *             required: [username, email, password]
  *             properties:
- *               name:
+ *               username:
  *                 type: string
- *               description:
+ *                 example: Мария Петрова
+ *               email:
  *                 type: string
- *               base_price:
- *                 type: number
+ *                 format: email
+ *                 example: maria@cleanspace.by
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 minLength: 6
  *     responses:
  *       201:
- *         description: Service created successfully
+ *         description: Клинер успешно добавлен
+ *       400:
+ *         description: Email уже зарегистрирован или ошибка валидации
  *       403:
- *         description: Access denied
+ *         description: Доступ запрещён
  */
+
+// ── Services ──────────────────────────────────
 
 /**
  * @swagger
  * /api/services:
  *   get:
  *     tags: [Services]
- *     summary: Get all services
+ *     summary: Список всех услуг со средним рейтингом (публичный)
  *     responses:
  *       200:
- *         description: List of services
+ *         description: Массив услуг
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                   name:
+ *                     type: string
+ *                   description:
+ *                     type: string
+ *                   base_price:
+ *                     type: number
+ *                     description: Цена за 1 м²
+ *                   averageRating:
+ *                     type: number
+ *   post:
+ *     tags: [Services]
+ *     summary: Создать услугу (только admin)
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, description, base_price]
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Генеральная уборка
+ *               description:
+ *                 type: string
+ *               base_price:
+ *                 type: number
+ *                 example: 3.5
+ *     responses:
+ *       201:
+ *         description: Услуга создана
+ *       403:
+ *         description: Доступ запрещён
  */
 
 /**
@@ -229,14 +350,13 @@
  * /api/services/{id}:
  *   put:
  *     tags: [Services]
- *     summary: Update a service by ID
+ *     summary: Обновить услугу по ID (только admin)
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID of the service to update
  *         schema:
  *           type: integer
  *     requestBody:
@@ -254,46 +374,55 @@
  *                 type: number
  *     responses:
  *       200:
- *         description: Service updated successfully
+ *         description: Услуга обновлена
  *       403:
- *         description: Access denied
- */
-
-/**
- * @swagger
- * /api/services/{id}:
+ *         description: Доступ запрещён
+ *       404:
+ *         description: Услуга не найдена
  *   delete:
  *     tags: [Services]
- *     summary: Delete a service by ID
+ *     summary: Удалить услугу по ID (только admin). Каскадно удаляет связанные заказы и отзывы.
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID of the service to delete
  *         schema:
  *           type: integer
  *     responses:
  *       204:
- *         description: Service deleted successfully
+ *         description: Услуга удалена
  *       403:
- *         description: Access denied
+ *         description: Доступ запрещён
+ *       404:
+ *         description: Услуга не найдена
  */
 
-/**
- * @swagger
- * tags:
- *   name: Orders
- *   description: Order management
- */
+// ── Orders ────────────────────────────────────
 
 /**
  * @swagger
  * /api/orders:
+ *   get:
+ *     tags: [Orders]
+ *     summary: Заказы текущего пользователя
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Массив заказов пользователя
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Order'
+ *       401:
+ *         description: Не авторизован
  *   post:
  *     tags: [Orders]
- *     summary: Create a new order
+ *     summary: Создать новый заказ
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -302,34 +431,28 @@
  *         application/json:
  *           schema:
  *             type: object
+ *             required: [service_id, area, address, order_date]
  *             properties:
  *               service_id:
  *                 type: integer
+ *                 example: 1
  *               area:
  *                 type: number
+ *                 description: Площадь в м²
+ *                 example: 45
  *               address:
  *                 type: string
+ *                 example: ул. Ленина, д. 5, кв. 12
  *               order_date:
  *                 type: string
  *                 format: date-time
  *     responses:
  *       201:
- *         description: Order created successfully
+ *         description: Заказ создан. total_price = base_price × area
  *       400:
- *         description: Invalid input
- */
-
-/**
- * @swagger
- * /api/orders:
- *   get:
- *     tags: [Orders]
- *     summary: Get all user orders
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: List of user orders
+ *         description: Ошибка валидации
+ *       401:
+ *         description: Не авторизован
  */
 
 /**
@@ -337,14 +460,29 @@
  * /api/orders/all:
  *   get:
  *     tags: [Orders]
- *     summary: Get all orders (admin only)
+ *     summary: Все заказы системы (только admin)
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: List of all orders
+ *         description: Массив всех заказов
  *       403:
- *         description: Access denied
+ *         description: Доступ запрещён
+ */
+
+/**
+ * @swagger
+ * /api/cleaner/orders:
+ *   get:
+ *     tags: [Orders]
+ *     summary: Заказы, назначенные текущему клинеру
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Массив заказов клинера
+ *       403:
+ *         description: Доступ запрещён (только для role=cleaner)
  */
 
 /**
@@ -352,36 +490,33 @@
  * /api/orders/{id}:
  *   get:
  *     tags: [Orders]
- *     summary: Get an order by ID
+ *     summary: Получить заказ по ID
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID of the order to retrieve
  *         schema:
  *           type: integer
  *     responses:
  *       200:
- *         description: Order details
+ *         description: Детали заказа
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Order'
  *       404:
- *         description: Order not found
- */
-
-/**
- * @swagger
- * /api/orders/{id}:
+ *         description: Заказ не найден
  *   put:
  *     tags: [Orders]
- *     summary: Update an order by ID
+ *     summary: Обновить заказ (площадь, адрес, статус)
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID of the order to update
  *         schema:
  *           type: integer
  *     requestBody:
@@ -395,55 +530,100 @@
  *                 type: number
  *               address:
  *                 type: string
- *               completion_date:
+ *               status:
  *                 type: string
- *                 format: date-time
+ *                 enum: [pending, assigned, in_progress, completed]
+ *                 description: Статус completed доступен только клинеру
  *     responses:
  *       200:
- *         description: Order updated successfully
- *       404:
- *         description: Order not found
+ *         description: Заказ обновлён
+ *       400:
+ *         description: Ошибка валидации или бизнес-логики
  *       403:
- *         description: Access denied
- */
-
-/**
- * @swagger
- * /api/orders/{id}:
+ *         description: Недостаточно прав
+ *       404:
+ *         description: Заказ не найден
  *   delete:
  *     tags: [Orders]
- *     summary: Delete an order by ID
+ *     summary: Отменить заказ. Если заказ оплачен — возвращает средства (удаляет платёж). Нельзя отменить выполненный заказ.
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID of the order to delete
  *         schema:
  *           type: integer
  *     responses:
  *       204:
- *         description: Order deleted successfully
+ *         description: Заказ отменён (и возврат средств, если был оплачен)
+ *       400:
+ *         description: Нельзя отменить выполненный заказ
  *       404:
- *         description: Order not found
+ *         description: Заказ не найден
+ */
+
+/**
+ * @swagger
+ * /api/orders/{id}/assign-cleaner:
+ *   put:
+ *     tags: [Orders]
+ *     summary: Назначить клинера на заказ (только admin). Статус заказа меняется на assigned.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID заказа
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [cleaner_id]
+ *             properties:
+ *               cleaner_id:
+ *                 type: integer
+ *                 example: 3
+ *     responses:
+ *       200:
+ *         description: Клинер назначен, статус заказа = assigned
+ *       400:
+ *         description: Клинер не найден или неверная роль
  *       403:
- *         description: Access denied
+ *         description: Доступ запрещён
+ *       404:
+ *         description: Заказ не найден
  */
+
+// ── Payments ──────────────────────────────────
 
 /**
  * @swagger
- * tags:
- *   name: Reviews
- *   description: Review management
- */
-
-/**
- * @swagger
- * /api/reviews:
+ * /api/payments:
+ *   get:
+ *     tags: [Payments]
+ *     summary: История платежей текущего пользователя
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Массив платежей (по убыванию даты)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Payment'
+ *       401:
+ *         description: Не авторизован
  *   post:
- *     tags: [Reviews]
- *     summary: Create a new review
+ *     tags: [Payments]
+ *     summary: Оплатить заказ
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -452,31 +632,117 @@
  *         application/json:
  *           schema:
  *             type: object
+ *             required: [order_id]
  *             properties:
- *               service_id:
+ *               order_id:
  *                 type: integer
- *               rating:
- *                 type: integer
- *               comment:
+ *                 example: 7
+ *               payment_method:
  *                 type: string
+ *                 enum: [card, bank_transfer]
+ *                 default: card
  *     responses:
  *       201:
- *         description: Review created successfully
+ *         description: Платёж создан. transaction_id генерируется автоматически (UUID).
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Payment'
  *       400:
- *         description: Invalid input
+ *         description: Заказ уже оплачен, не найден или нет доступа
+ *       401:
+ *         description: Не авторизован
  */
+
+/**
+ * @swagger
+ * /api/admin/payments:
+ *   get:
+ *     tags: [Payments]
+ *     summary: Все платежи системы (только admin)
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Массив всех платежей
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Payment'
+ *       403:
+ *         description: Доступ запрещён
+ */
+
+/**
+ * @swagger
+ * /api/orders/{orderId}/payment:
+ *   get:
+ *     tags: [Payments]
+ *     summary: Получить платёж по ID заказа
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: orderId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID заказа
+ *     responses:
+ *       200:
+ *         description: Платёж или null, если заказ не оплачен
+ *         content:
+ *           application/json:
+ *             schema:
+ *               oneOf:
+ *                 - $ref: '#/components/schemas/Payment'
+ *                 - type: object
+ *                   nullable: true
+ *       401:
+ *         description: Не авторизован
+ */
+
+// ── Reviews ───────────────────────────────────
 
 /**
  * @swagger
  * /api/reviews:
  *   get:
  *     tags: [Reviews]
- *     summary: Get all user reviews
+ *     summary: Отзывы текущего пользователя
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: List of user reviews
+ *         description: Массив отзывов
+ *   post:
+ *     tags: [Reviews]
+ *     summary: Оставить отзыв на услугу
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [service_id, rating]
+ *             properties:
+ *               service_id:
+ *                 type: integer
+ *               rating:
+ *                 type: integer
+ *                 minimum: 1
+ *                 maximum: 5
+ *               comment:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Отзыв создан
+ *       400:
+ *         description: Ошибка валидации
  */
 
 /**
@@ -484,14 +750,14 @@
  * /api/reviews/all:
  *   get:
  *     tags: [Reviews]
- *     summary: Get all reviews (admin only)
+ *     summary: Все отзывы системы (только admin)
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: List of all reviews
+ *         description: Массив всех отзывов
  *       403:
- *         description: Access denied
+ *         description: Доступ запрещён
  */
 
 /**
@@ -499,17 +765,16 @@
  * /api/reviews/{serviceId}:
  *   get:
  *     tags: [Reviews]
- *     summary: Get reviews by service ID
+ *     summary: Отзывы на конкретную услугу (публичный)
  *     parameters:
  *       - in: path
  *         name: serviceId
  *         required: true
- *         description: ID of the service to get reviews for
  *         schema:
  *           type: integer
  *     responses:
  *       200:
- *         description: List of reviews for the service
+ *         description: Массив отзывов на услугу
  */
 
 /**
@@ -517,21 +782,20 @@
  * /api/review/{id}:
  *   get:
  *     tags: [Reviews]
- *     summary: Get a review by ID
+ *     summary: Получить отзыв по ID
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID of the review to retrieve
  *         schema:
  *           type: integer
  *     responses:
  *       200:
- *         description: Review details
+ *         description: Детали отзыва
  *       404:
- *         description: Review not found
+ *         description: Отзыв не найден
  */
 
 /**
@@ -539,14 +803,13 @@
  * /api/reviews/{id}:
  *   put:
  *     tags: [Reviews]
- *     summary: Update a review by ID
+ *     summary: Обновить отзыв по ID
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID of the review to update
  *         schema:
  *           type: integer
  *     requestBody:
@@ -558,97 +821,82 @@
  *             properties:
  *               rating:
  *                 type: integer
+ *                 minimum: 1
+ *                 maximum: 5
  *               comment:
  *                 type: string
  *     responses:
  *       200:
- *         description: Review updated successfully
+ *         description: Отзыв обновлён
  *       404:
- *         description: Review not found
- *       403:
- *         description: Access denied
- */
-
-/**
- * @swagger
- * /api/reviews/{id}:
+ *         description: Отзыв не найден
  *   delete:
  *     tags: [Reviews]
- *     summary: Delete a review by ID
+ *     summary: Удалить отзыв по ID
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID of the review to delete
  *         schema:
  *           type: integer
  *     responses:
  *       204:
- *         description: Review deleted successfully
+ *         description: Отзыв удалён
  *       404:
- *         description: Review not found
- *       403:
- *         description: Access denied
+ *         description: Отзыв не найден
  */
 
-/**
- * @swagger
- * tags:
- *   name: Order Ratings
- *   description: Order rating management
- */
-
-/**
- * @swagger
- * /api/orders/{orderId}/ratings:
- *   post:
- *     tags: [Order Ratings]
- *     summary: Create a rating for an order
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: orderId
- *         required: true
- *         description: ID of the order to rate
- *         schema:
- *           type: integer
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               rating:
- *                 type: integer
- *               comment:
- *                 type: string
- *     responses:
- *       201:
- *         description: Rating created successfully
- *       400:
- *         description: Invalid input
- */
+// ── Order Ratings ─────────────────────────────
 
 /**
  * @swagger
  * /api/orders/{orderId}/ratings:
  *   get:
  *     tags: [Order Ratings]
- *     summary: Get all ratings for an order
+ *     summary: Оценки конкретного заказа (публичный)
  *     parameters:
  *       - in: path
  *         name: orderId
  *         required: true
- *         description: ID of the order to get ratings for
  *         schema:
  *           type: integer
  *     responses:
  *       200:
- *         description: List of ratings for the order
+ *         description: Массив оценок заказа
+ *   post:
+ *     tags: [Order Ratings]
+ *     summary: Оценить выполненный заказ (rating 1–5)
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: orderId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [rating]
+ *             properties:
+ *               rating:
+ *                 type: integer
+ *                 minimum: 1
+ *                 maximum: 5
+ *                 example: 5
+ *               comment:
+ *                 type: string
+ *                 example: Отличная работа!
+ *     responses:
+ *       201:
+ *         description: Оценка создана
+ *       400:
+ *         description: Ошибка валидации
  */
 
 /**
@@ -656,12 +904,12 @@
  * /api/userRatings:
  *   get:
  *     tags: [Order Ratings]
- *     summary: Get all ratings by user
+ *     summary: Оценки, оставленные текущим пользователем
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: List of ratings by the user
+ *         description: Массив оценок пользователя
  */
 
 /**
@@ -669,10 +917,10 @@
  * /api/ratings:
  *   get:
  *     tags: [Order Ratings]
- *     summary: Get all order ratings
+ *     summary: Все оценки заказов (публичный)
  *     responses:
  *       200:
- *         description: List of all order ratings
+ *         description: Массив всех оценок
  */
 
 /**
@@ -680,34 +928,27 @@
  * /api/ratings/{id}:
  *   get:
  *     tags: [Order Ratings]
- *     summary: Get an order rating by ID
+ *     summary: Получить оценку по ID
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID of the rating to retrieve
  *         schema:
  *           type: integer
  *     responses:
  *       200:
- *         description: Rating details
+ *         description: Детали оценки
  *       404:
- *         description: Rating not found
- */
-
-/**
- * @swagger
- * /api/ratings/{id}:
+ *         description: Оценка не найдена
  *   put:
  *     tags: [Order Ratings]
- *     summary: Update an order rating by ID
+ *     summary: Обновить оценку по ID
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID of the rating to update
  *         schema:
  *           type: integer
  *     requestBody:
@@ -719,37 +960,107 @@
  *             properties:
  *               rating:
  *                 type: integer
+ *                 minimum: 1
+ *                 maximum: 5
  *               comment:
  *                 type: string
  *     responses:
  *       200:
- *         description: Rating updated successfully
+ *         description: Оценка обновлена
  *       404:
- *         description: Rating not found
- *       403:
- *         description: Access denied
- */
-
-/**
- * @swagger
- * /api/ratings/{id}:
+ *         description: Оценка не найдена
  *   delete:
  *     tags: [Order Ratings]
- *     summary: Delete an order rating by ID
+ *     summary: Удалить оценку по ID
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID of the rating to delete
  *         schema:
  *           type: integer
  *     responses:
  *       204:
- *         description: Rating deleted successfully
+ *         description: Оценка удалена
  *       404:
- *         description: Rating not found
- *       403:
- *         description: Access denied
+ *         description: Оценка не найдена
+ */
+
+// ── Shared schemas ────────────────────────────
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Order:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *         user_id:
+ *           type: integer
+ *         service_id:
+ *           type: integer
+ *         cleaner_id:
+ *           type: integer
+ *           nullable: true
+ *         area:
+ *           type: number
+ *           description: Площадь в м²
+ *         total_price:
+ *           type: number
+ *           description: base_price × area
+ *         address:
+ *           type: string
+ *         status:
+ *           type: string
+ *           enum: [pending, assigned, in_progress, completed]
+ *         order_date:
+ *           type: string
+ *           format: date-time
+ *         completion_date:
+ *           type: string
+ *           format: date-time
+ *           nullable: true
+ *         service:
+ *           type: object
+ *           properties:
+ *             id:
+ *               type: integer
+ *             name:
+ *               type: string
+ *             base_price:
+ *               type: number
+ *         cleaner:
+ *           type: object
+ *           nullable: true
+ *           properties:
+ *             id:
+ *               type: integer
+ *             username:
+ *               type: string
+ *     Payment:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *         order_id:
+ *           type: integer
+ *         user_id:
+ *           type: integer
+ *         amount:
+ *           type: number
+ *         status:
+ *           type: string
+ *           example: paid
+ *         payment_method:
+ *           type: string
+ *           enum: [card, bank_transfer]
+ *         transaction_id:
+ *           type: string
+ *           description: UUID транзакции
+ *         created_at:
+ *           type: string
+ *           format: date-time
  */

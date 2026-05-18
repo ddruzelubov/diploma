@@ -35,13 +35,20 @@ const OrdersPage = () => {
         fetchData();
     }, [navigate]);
 
-    const cancelOrder = async (orderId) => {
+    const cancelOrder = async (orderId, isPaid) => {
+        const msg = isPaid
+            ? 'Отменить заказ? Оплата будет возвращена.'
+            : 'Вы уверены, что хотите отменить заказ?';
+        if (!window.confirm(msg)) return;
         try {
             await api.delete(`/orders/${orderId}`);
             setOrders(prev => prev.filter(o => o.id !== orderId));
+            if (isPaid) {
+                setPaidOrderIds(prev => { const s = new Set(prev); s.delete(orderId); return s; });
+            }
         } catch (err) {
             console.error('Error canceling order:', err);
-            setError('Не удалось отменить заказ');
+            setError(err.response?.data?.error || 'Не удалось отменить заказ');
         }
     };
 
@@ -144,13 +151,13 @@ const OrdersPage = () => {
                                                     💳 Оплатить
                                                 </button>
                                             )}
-                                            {order.status === 'pending' && !isPaid && (
+                                            {order.status === 'pending' && (
                                                 <button
                                                     type="button"
                                                     className="btn-order btn-order--cancel"
-                                                    onClick={() => cancelOrder(order.id)}
+                                                    onClick={() => cancelOrder(order.id, isPaid)}
                                                 >
-                                                    Отменить
+                                                    {isPaid ? '↩ Возврат и отмена' : 'Отменить'}
                                                 </button>
                                             )}
                                         </div>
