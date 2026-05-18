@@ -11,6 +11,7 @@ channel = "stable-25_05"
 [userenv.shared]
 JWT_SECRET = "cleaning_service_jwt_secret_key"
 PORT = "3001"
+EMAIL_SERVICE_URL = "http://127.0.0.1:5001"
 
 [workflows]
 runButton = "Project"
