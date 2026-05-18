@@ -1,4 +1,6 @@
 const PaymentService = require('../services/PaymentService');
+const { sendEmailNotification } = require('../utils/emailPublisher');
+const { paymentReceiptEmail } = require('../utils/emailTemplates');
 
 class PaymentController {
     async createPayment(req, res) {
@@ -6,6 +8,22 @@ class PaymentController {
         try {
             const payment = await PaymentService.createPayment(userId, req.body);
             res.status(201).json(payment);
+
+            try {
+                await sendEmailNotification(paymentReceiptEmail({
+                    email: req.user.email,
+                    username: req.user.email,
+                    orderId: payment.order_id,
+                    serviceName: payment._serviceName,
+                    address: payment._orderAddress,
+                    amount: payment.amount,
+                    paymentMethod: payment.payment_method,
+                    transactionId: payment.transaction_id,
+                    paidAt: payment.createdAt || new Date(),
+                }));
+            } catch (queueErr) {
+                console.warn('Очередь email недоступна (payment):', queueErr.message);
+            }
         } catch (error) {
             console.error('Payment error:', error.message);
             res.status(400).json({ error: error.message });

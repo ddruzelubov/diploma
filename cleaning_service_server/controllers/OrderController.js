@@ -1,13 +1,30 @@
 const OrderService = require('../services/OrderService');
 const logDbOperation = require('../middleware/dbLogger');
+const { sendEmailNotification } = require('../utils/emailPublisher');
+const { orderConfirmationEmail, orderCompletedEmail } = require('../utils/emailTemplates');
 
 class OrderController {
     async createOrder(req, res) {
-        const user_id = req.user.id; 
+        const user_id = req.user.id;
         try {
             const order = await OrderService.createOrder(user_id, req.body);
             await logDbOperation('INSERT', 'orders', 'ORDER_' + order.id);
             res.status(201).json(order);
+
+            try {
+                await sendEmailNotification(orderConfirmationEmail({
+                    email: req.user.email,
+                    username: req.user.email,
+                    orderId: order.id,
+                    serviceName: order.service?.name || null,
+                    address: order.address,
+                    area: order.area,
+                    totalPrice: order.total_price,
+                    orderDate: order.order_date || order.createdAt || new Date(),
+                }));
+            } catch (queueErr) {
+                console.warn('Очередь email недоступна (order):', queueErr.message);
+            }
         } catch (error) {
             console.error('Error creating order:', error.message || error);
             res.status(400).json({ error: error.message });
@@ -15,7 +32,7 @@ class OrderController {
     }
 
     async getAllUserOrders(req, res) {
-        const userId = req.user.id; 
+        const userId = req.user.id;
         try {
             const orders = await OrderService.getAllUserOrders(userId);
             res.json(orders);
@@ -75,6 +92,21 @@ class OrderController {
             const order = await OrderService.updateOrder(id, req.body, req.user.role);
             await logDbOperation('UPDATE', 'orders', id);
             res.json(order);
+
+            if (req.body.status === 'completed' && order.user) {
+                try {
+                    await sendEmailNotification(orderCompletedEmail({
+                        email: order.user.email,
+                        username: order.user.username || order.user.email,
+                        orderId: order.id,
+                        serviceName: order.service?.name || null,
+                        address: order.address,
+                        completionDate: order.completion_date || new Date(),
+                    }));
+                } catch (queueErr) {
+                    console.warn('Очередь email недоступна (completion):', queueErr.message);
+                }
+            }
         } catch (error) {
             console.error('Error updating order:', error);
             res.status(400).json({ error: error.message });

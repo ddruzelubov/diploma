@@ -1,6 +1,7 @@
 const UserService = require('../services/UserService');
 const logDbOperation = require('../middleware/dbLogger');
-const amqp = require('amqplib');
+const { sendEmailNotification } = require('../utils/emailPublisher');
+const { welcomeEmail } = require('../utils/emailTemplates');
 
 class UserController {
     async register(req, res) {
@@ -9,20 +10,8 @@ class UserController {
             const newUser = await UserService.register({ username, email, password, role });
             await logDbOperation('INSERT', 'users', 'USER_' + newUser.id);
 
-            const emailData = {
-                to: email,
-                subject: 'Добро пожаловать!',
-                text: `Здравствуйте, ${username}! Спасибо за регистрацию.`,
-            };
-
             try {
-                const connection = await amqp.connect('amqp://127.0.0.1');
-                const channel = await connection.createChannel();
-                const queue = 'emailQueue';
-                await channel.assertQueue(queue, { durable: true });
-                channel.sendToQueue(queue, Buffer.from(JSON.stringify(emailData)), { persistent: true });
-                await channel.close();
-                await connection.close();
+                await sendEmailNotification(welcomeEmail({ username, email }));
             } catch (queueErr) {
                 console.warn('Очередь email недоступна:', queueErr.message);
             }

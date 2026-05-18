@@ -21,7 +21,12 @@ class PaymentService {
             transaction_id: crypto.randomUUID()
         });
 
-        return payment;
+        const paymentData = payment.toJSON ? payment.toJSON() : { ...payment };
+        return {
+            ...paymentData,
+            _serviceName: order.service?.name || null,
+            _orderAddress: order.address || null,
+        };
     }
 
     async getUserPayments(userId) {
