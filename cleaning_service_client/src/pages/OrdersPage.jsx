@@ -144,7 +144,7 @@ const OrdersPage = () => {
                                                     💳 Оплатить
                                                 </button>
                                             )}
-                                            {order.status === 'pending' && (
+                                            {order.status === 'pending' && !isPaid && (
                                                 <button
                                                     type="button"
                                                     className="btn-order btn-order--cancel"

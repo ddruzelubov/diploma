@@ -2,6 +2,7 @@ const OrderRepository = require('../repositories/OrderRepository');
 const User = require('../models/User');
 const Service = require('../models/Service');
 const OrderRatingRepository = require('../repositories/OrderRatingRepository');
+const PaymentRepository = require('../repositories/PaymentRepository');
 
 class OrderService {
     async createOrder(userId, orderData) {
@@ -96,6 +97,11 @@ class OrderService {
     async deleteOrder(id) {
         const order = await OrderRepository.findById(id);
         if (!order) throw new Error('Order not found');
+
+        const payment = await PaymentRepository.findByOrderId(id);
+        if (payment) {
+            throw new Error('Невозможно отменить оплаченный заказ');
+        }
 
         await OrderRatingRepository.deleteAllByOrderId(id);
         return await OrderRepository.delete(id);

@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "j7g_8kwXBQD0CN9Psq05i"
+uri = "file://DOCUMENTATION.md"
+type = "text"
+title = "CleanSpace — Техническая документация"
