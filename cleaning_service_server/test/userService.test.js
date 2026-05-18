@@ -63,7 +63,7 @@ describe('UserService', () => {
             });
             expect(UserRepository.findUserByEmailWithPassword).toHaveBeenCalledWith(email);
             expect(bcrypt.compare).toHaveBeenCalledWith(password, user.password);
-            expect(jwt.sign).toHaveBeenCalledWith({ id: user.id, email: user.email, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            expect(jwt.sign).toHaveBeenCalledWith({ id: user.id, email: user.email, role: user.role }, process.env.JWT_SECRET, { expiresIn: '8h' });
         });
 
         it('should throw an error if email or password is invalid', async () => {

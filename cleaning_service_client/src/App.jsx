@@ -63,6 +63,7 @@ const App = () => {
         setIsAuthenticated(false);
         setIsAdmin(false);
         setIsCleaner(false);
+        window.location.href = '/';
     };
 
     const renderNav = () => {

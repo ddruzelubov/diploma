@@ -80,7 +80,7 @@ const CleanerOrders = () => {
                                     </div>
                                     <div className="co-card__row">
                                         <span className="co-card__label">💰 Стоимость</span>
-                                        <span>{parseFloat(order.total_price).toFixed(2)} ₽</span>
+                                        <span>{parseFloat(order.total_price).toFixed(2)} Br</span>
                                     </div>
                                     <div className="co-card__row">
                                         <span className="co-card__label">📅 Заказ от</span>

@@ -156,8 +156,8 @@ const OrderServicePage = () => {
                     {area > 0 && (
                         <div className="osp-price-box">
                             <span className="osp-price-label">Итоговая стоимость</span>
-                            <span className="osp-price-value">{totalPrice.toFixed(2)} ₽</span>
-                            <span className="osp-price-hint">{basePrice} ₽/м² × {area} м²</span>
+                            <span className="osp-price-value">{totalPrice.toFixed(2)} Br</span>
+                            <span className="osp-price-hint">{basePrice} Br/м² × {area} м²</span>
                         </div>
                     )}
 

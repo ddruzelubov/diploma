@@ -99,7 +99,7 @@ const PaymentPage = () => {
                     </div>
                     <div className="pay-summary__row pay-summary__row--total">
                         <span className="pay-summary__label">К оплате</span>
-                        <span className="pay-summary__total">{parseFloat(order.total_price).toFixed(2)} ₽</span>
+                        <span className="pay-summary__total">{parseFloat(order.total_price).toFixed(2)} Br</span>
                     </div>
                 </div>
 
@@ -183,16 +183,16 @@ const PaymentPage = () => {
                                 <strong>ООО «CleanSpace»</strong>
                             </div>
                             <div className="pay-bank-info__row">
-                                <span>ИНН</span>
-                                <strong>7701234567</strong>
+                                <span>УНП</span>
+                                <strong>101234567</strong>
                             </div>
                             <div className="pay-bank-info__row">
                                 <span>Р/счёт</span>
-                                <strong>40702810000000001234</strong>
+                                <strong>BY20AKBB30120000001234000000</strong>
                             </div>
                             <div className="pay-bank-info__row">
                                 <span>Банк</span>
-                                <strong>Сбербанк</strong>
+                                <strong>Беларусбанк</strong>
                             </div>
                             <div className="pay-bank-info__row">
                                 <span>Назначение платежа</span>
@@ -207,7 +207,7 @@ const PaymentPage = () => {
                     <button type="submit" className="pay-submit" disabled={processing}>
                         {processing
                             ? 'Обработка…'
-                            : `Оплатить ${parseFloat(order.total_price).toFixed(2)} ₽`}
+                            : `Оплатить ${parseFloat(order.total_price).toFixed(2)} Br`}
                     </button>
                 </form>
 

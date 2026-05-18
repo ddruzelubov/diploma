@@ -74,7 +74,7 @@ const ServiceList = () => {
                             <p className="sl-card__desc">{service.description}</p>
                             <div className="sl-card__meta-row">
                                 <span className="sl-card__price">
-                                    от <strong>{service.base_price} ₽</strong>/м²
+                                    от <strong>{service.base_price} Br</strong>/м²
                                 </span>
                                 {service.averageRating !== undefined && (
                                     <span className="sl-card__rating">

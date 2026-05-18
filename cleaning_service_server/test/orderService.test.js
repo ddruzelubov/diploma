@@ -184,14 +184,21 @@ describe('OrderService', () => {
             await expect(OrderService.updateOrder(orderId, orderData)).rejects.toThrow('Service not found or has no base price');
         });
     
-        it('should throw an error if completion date is not later than order date', async () => {
+        it('should update only address when no area or status provided', async () => {
             const orderId = 1;
-            const orderData = { completion_date: '2022-01-01' };
-            const order = { id: orderId, user_id: 1, service_id: 1, area: 30, total_price: 300, address: 'Old Address', order_date: '2022-01-02' };
-    
+            const orderData = { address: 'Updated Address' };
+            const order = {
+                id: orderId, user_id: 1, service_id: 1, area: 30,
+                total_price: 300, address: 'Old Address',
+                service: { id: 1, base_price: 10 }
+            };
+
             OrderRepository.findById.mockResolvedValue(order);
-    
-            await expect(OrderService.updateOrder(orderId, orderData)).rejects.toThrow('Completion date must be later than order date');
+            OrderRepository.update.mockResolvedValue({ ...order, address: 'Updated Address' });
+
+            const result = await OrderService.updateOrder(orderId, orderData);
+            expect(result).toEqual(expect.objectContaining({ id: orderId, address: 'Updated Address' }));
+            expect(OrderRepository.update).toHaveBeenCalled();
         });
     });
     

@@ -36,8 +36,8 @@ const HomePage = () => {
                     <span className="home-stat__label">уборок в год</span>
                 </div>
                 <div className="home-stat">
-                    <span className="home-stat__value">48 ч</span>
-                    <span className="home-stat__label">служба поддержки</span>
+                    <span className="home-stat__value">24/7</span>
+                    <span className="home-stat__label">поддержка клиентов</span>
                 </div>
                 <div className="home-stat">
                     <span className="home-stat__value">100%</span>

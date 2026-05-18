@@ -125,7 +125,7 @@ const AdminServices = () => {
                             />
                         </label>
                         <label className="as-field">
-                            <span>Цена за м² (₽)</span>
+                            <span>Цена за м² (Br)</span>
                             <input
                                 type="number"
                                 placeholder="15.00"
@@ -163,7 +163,7 @@ const AdminServices = () => {
                                 <strong className="as-card__name">{service.name}</strong>
                                 <p className="as-card__desc">{service.description}</p>
                                 <span className="as-card__price">
-                                    {parseFloat(service.base_price).toFixed(2)} ₽/м²
+                                    {parseFloat(service.base_price).toFixed(2)} Br/м²
                                 </span>
                             </div>
                             <div className="as-card__actions">

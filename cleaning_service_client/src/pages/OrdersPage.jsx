@@ -107,7 +107,7 @@ const OrdersPage = () => {
                                     <span className="orders-card__meta">
                                         {new Date(order.order_date).toLocaleDateString('ru-RU')}
                                         {' · '}
-                                        {parseFloat(order.total_price).toFixed(2)} ₽
+                                        {parseFloat(order.total_price).toFixed(2)} Br
                                     </span>
                                     {order.cleaner && (
                                         <span className="orders-card__cleaner">

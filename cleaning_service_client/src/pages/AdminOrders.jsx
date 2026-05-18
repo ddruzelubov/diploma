@@ -104,7 +104,7 @@ const AdminOrders = () => {
                                         </div>
                                         <div className="ao-row">
                                             <span className="ao-label">💰 Стоимость</span>
-                                            <span>{parseFloat(order.total_price).toFixed(2)} ₽</span>
+                                            <span>{parseFloat(order.total_price).toFixed(2)} Br</span>
                                         </div>
                                         {order.cleaner && (
                                             <div className="ao-row">

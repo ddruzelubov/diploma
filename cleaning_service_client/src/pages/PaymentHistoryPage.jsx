@@ -53,7 +53,7 @@ const PaymentHistoryPage = () => {
                 {payments.length > 0 && (
                     <div className="ph-total-card">
                         <span className="ph-total-label">Оплачено всего</span>
-                        <span className="ph-total-val">{totalPaid.toFixed(2)} ₽</span>
+                        <span className="ph-total-val">{totalPaid.toFixed(2)} Br</span>
                     </div>
                 )}
             </div>
@@ -96,7 +96,7 @@ const PaymentHistoryPage = () => {
                                 </div>
                                 <div className="ph-card__right">
                                     <span className="ph-card__amount">
-                                        {parseFloat(payment.amount).toFixed(2)} ₽
+                                        {parseFloat(payment.amount).toFixed(2)} Br
                                     </span>
                                     <span className={`ph-badge ${st.cls}`}>{st.text}</span>
                                     {payment.transaction_id && (
